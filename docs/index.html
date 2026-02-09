@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diccionario de Procedimientos</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Sistema unificado de procedimientos y automatizaciones">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  
+  <!-- Tema -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  
+  <!-- Estilos personalizados -->
+  <style>
+    :root {
+      --theme-color: #2c3e50;
+      --sidebar-width: 300px;
+    }
+    
+    .sidebar {
+      background: #f8f9fa;
+    }
+    
+    .search input {
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+    }
+    
+    .pdf-viewer {
+      width: 100%;
+      height: 800px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    
+    .procedure-card {
+      background: #f5f5f5;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border-left: 4px solid var(--theme-color);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Cargando...</div>
+  
+  <script>
+    window.$docsify = {
+      name: '📚 Diccionario de Procedimientos',
+      repo: '', // Opcional: enlace a tu repositorio Git
+      loadSidebar: true,
+      subMaxLevel: 3,
+      auto2top: true,
+      
+      // Búsqueda
+      search: {
+        maxAge: 86400000, // Cache por 1 día
+        paths: 'auto',
+        placeholder: '🔍 Buscar procedimientos...',
+        noData: 'No se encontraron resultados',
+        depth: 6,
+        hideOtherSidebarContent: false,
+      },
+      
+      // Paginación
+      pagination: {
+        previousText: 'Anterior',
+        nextText: 'Siguiente',
+      },
+      
+      // Copiar código
+      copyCode: {
+        buttonText: 'Copiar',
+        errorText: 'Error',
+        successText: '✓ Copiado'
+      },
+      
+      // PDF embebido
+      plugins: [
+        function(hook, vm) {
+          hook.beforeEach(function(content) {
+            // Agregar fecha de última actualización
+            var footer = '\n\n---\n*Última actualización: ' + new Date().toLocaleDateString('es-ES') + '*';
+            return content + footer;
+          });
+        }
+      ]
+    }
+  </script>
+  
+  <!-- Docsify core -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  
+  <!-- Plugin de búsqueda -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  
+  <!-- Plugin de zoom para imágenes -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  
+  <!-- Plugin de copiar código -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+  
+  <!-- Plugin de paginación -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  
+  <!-- Soporte para PDF (opcional) -->
+  <script src="//cdn.jsdelivr.net/npm/pdfobject@2.2.8/pdfobject.min.js"></script>
+  
+</body>
+</html>

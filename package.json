@@ -1,0 +1,21 @@
+{
+  "name": "diccionario-procedimientos",
+  "version": "1.0.0",
+  "description": "Sistema unificado de documentación de procedimientos y automatizaciones",
+  "scripts": {
+    "dev": "docsify serve docs",
+    "start": "docsify serve docs",
+    "convert": "python convert_pdfs.py"
+  },
+  "keywords": [
+    "documentacion",
+    "procedimientos",
+    "automatizaciones",
+    "wiki"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "devDependencies": {
+    "docsify-cli": "^4.4.4"
+  }
+}
