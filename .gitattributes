@@ -1,0 +1,27 @@
+# .gitattributes
+# Asegura que los archivos binarios se manejen correctamente
+
+# PDFs como binarios
+*.pdf binary
+
+# Imágenes como binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+
+# Office documents como binarios
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
+# Normalizar fin de línea para archivos de texto
+*.md text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.css text eol=lf
