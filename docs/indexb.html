@@ -21,11 +21,6 @@
       background: #f8f9fa;
     }
     
-    .sidebar-nav > ul > li > p {
-      font-weight: bold;
-      margin: 10px 0 5px 0;
-    }
-    
     .search input {
       border: 2px solid #e0e0e0;
       border-radius: 5px;
@@ -52,11 +47,6 @@
       border: 2px dashed #ddd;
     }
     
-    .pdf-fallback h3 {
-      color: var(--theme-color);
-      margin-bottom: 20px;
-    }
-    
     .pdf-fallback a {
       display: inline-block;
       background: var(--theme-color);
@@ -66,11 +56,10 @@
       text-decoration: none;
       margin: 10px;
       font-weight: bold;
-      transition: opacity 0.3s;
     }
     
     .pdf-fallback a:hover {
-      opacity: 0.8;
+      opacity: 0.9;
     }
     
     .procedure-card {
@@ -81,11 +70,6 @@
       border-left: 4px solid var(--theme-color);
     }
     
-    /* Ocultar el TOC automático del README */
-    .content .sidebar-nav {
-      display: none !important;
-    }
-    
     /* Mejoras para móvil */
     @media screen and (max-width: 768px) {
       .pdf-viewer {
@@ -94,11 +78,6 @@
       
       .sidebar {
         font-size: 14px;
-      }
-      
-      .pdf-fallback a {
-        display: block;
-        margin: 10px 0;
       }
     }
   </style>
@@ -111,16 +90,8 @@
       name: '📚 Diccionario de Procedimientos',
       repo: '',
       loadSidebar: true,
-      hideSidebar: false,
       subMaxLevel: 3,
       auto2top: true,
-      maxLevel: 4,
-      
-      // Desactivar el índice automático del contenido
-      toc: {
-        tocMaxLevel: 0,
-        target: 'h2'
-      },
       
       // Búsqueda
       search: {
@@ -145,111 +116,70 @@
         successText: '✓ Copiado'
       },
       
-      // Alias para evitar problemas con rutas
-      alias: {
-        '/.*/_sidebar.md': '/_sidebar.md',
-      },
-      
       // Plugin personalizado para manejar PDFs
       plugins: [
         function(hook, vm) {
-          // Agregar fecha de última actualización
+          // Interceptar enlaces a PDFs
           hook.beforeEach(function(content) {
+            // Agregar fecha de última actualización
             var footer = '\n\n---\n*Última actualización: ' + new Date().toLocaleDateString('es-ES') + '*';
             return content + footer;
           });
           
-          // Manejar carga de PDFs después de cada renderizado
+          // Manejar carga de PDFs
           hook.doneEach(function() {
-            // Esperar un poco para que el DOM se actualice
-            setTimeout(function() {
-              // Detectar todos los enlaces a PDFs
-              var pdfLinks = document.querySelectorAll('a[href*=".pdf"]');
-              
-              pdfLinks.forEach(function(link) {
-                // Si ya fue procesado, saltar
-                if (link.hasAttribute('data-pdf-processed')) {
-                  return;
-                }
-                
+            // Detectar enlaces a PDFs
+            var pdfLinks = document.querySelectorAll('a[href$=".pdf"]');
+            
+            pdfLinks.forEach(function(link) {
+              // Si no tiene la clase de ignorar
+              if (!link.hasAttribute('data-pdf-processed')) {
                 link.setAttribute('data-pdf-processed', 'true');
                 
                 // Agregar evento click
                 link.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  
                   var href = this.getAttribute('href');
-                  
-                  // Normalizar la ruta del PDF
-                  var pdfUrl = href;
-                  if (!href.startsWith('http') && !href.startsWith('/')) {
-                    // Para localhost, usar ruta relativa correcta
-                    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                      pdfUrl = href.startsWith('pdfs/') ? href : 'pdfs/' + href.split('/').pop();
-                    }
-                  }
-                  
-                  console.log('Intentando abrir PDF:', pdfUrl);
                   
                   // En móvil, abrir en nueva pestaña directamente
                   if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
+                    e.preventDefault();
+                    window.open(href, '_blank');
                     return false;
                   }
                   
-                  // En escritorio, intentar mostrar embebido
-                  var mainContent = document.querySelector('section.content');
-                  if (!mainContent) {
-                    mainContent = document.querySelector('.markdown-section');
-                  }
+                  // En escritorio, intentar mostrar con PDFObject
+                  e.preventDefault();
                   
-                  if (mainContent) {
-                    var viewerId = 'pdf-viewer-' + Date.now();
+                  // Crear contenedor para el PDF
+                  var container = document.createElement('div');
+                  container.className = 'pdf-container';
+                  container.innerHTML = '<div id="pdf-viewer-' + Date.now() + '"></div>';
+                  
+                  // Reemplazar contenido
+                  var contentDiv = document.querySelector('.content');
+                  if (contentDiv) {
+                    contentDiv.innerHTML = '';
+                    contentDiv.appendChild(container);
                     
-                    // Crear contenedor para el PDF
-                    mainContent.innerHTML = '<div class="pdf-container">' +
-                      '<div id="' + viewerId + '"></div>' +
-                      '</div>';
-                    
-                    // Scroll al inicio
-                    window.scrollTo(0, 0);
+                    var viewerId = container.querySelector('[id^="pdf-viewer-"]').id;
                     
                     // Intentar cargar PDF con PDFObject
-                    if (typeof PDFObject !== 'undefined' && PDFObject.supportsPDFs) {
-                      PDFObject.embed(pdfUrl, '#' + viewerId, {
+                    if (typeof PDFObject !== 'undefined') {
+                      PDFObject.embed(href, '#' + viewerId, {
                         height: '800px',
-                        pdfOpenParams: {
-                          view: 'FitH',
-                          pagemode: 'none',
-                          toolbar: 1,
-                          statusbar: 0,
-                          messages: 0,
-                          navpanes: 0,
-                          scrollbar: 1
-                        },
-                        fallbackLink: '<div class="pdf-fallback">' +
-                          '<h3>📄 No se puede mostrar el PDF en este navegador</h3>' +
-                          '<p>Puedes descargarlo o verlo en una nueva pestaña:</p>' +
-                          '<a href="' + pdfUrl + '" download>📥 Descargar PDF</a>' +
-                          '<a href="' + pdfUrl + '" target="_blank">👁️ Ver en nueva pestaña</a>' +
-                          '</div>'
+                        fallbackLink: '<div class="pdf-fallback"><p>📄 No se puede mostrar el PDF en este navegador</p><a href="' + href + '" target="_blank">📥 Descargar PDF</a><a href="' + href + '" target="_blank">👁️ Ver en nueva pestaña</a></div>'
                       });
                     } else {
-                      // Fallback: iframe simple
+                      // Fallback si PDFObject no está disponible
                       document.getElementById(viewerId).innerHTML = 
-                        '<iframe src="' + pdfUrl + '" class="pdf-viewer" frameborder="0"></iframe>' +
-                        '<div class="pdf-fallback" style="margin-top: 20px;">' +
-                        '<p>Si el PDF no se muestra arriba:</p>' +
-                        '<a href="' + pdfUrl + '" download>📥 Descargar PDF</a>' +
-                        '<a href="' + pdfUrl + '" target="_blank">👁️ Ver en nueva pestaña</a>' +
-                        '</div>';
+                        '<div class="pdf-fallback"><p>📄 Visualizador de PDF</p><a href="' + href + '" target="_blank">📥 Descargar PDF</a><a href="' + href + '" target="_blank">👁️ Ver en nueva pestaña</a></div>';
                     }
                   }
                   
                   return false;
                 });
-              });
-            }, 100);
+              }
+            });
           });
         }
       ]
