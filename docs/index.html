@@ -101,6 +101,49 @@
         margin: 10px 0;
       }
     }
+
+    /* ===== MENÚ COLAPSABLE ===== */
+
+    /* El <p> que actúa como cabecera de grupo (sin link) */
+    .sidebar-nav > ul > li > p {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 0;
+      transition: color 0.2s;
+    }
+
+    .sidebar-nav > ul > li > p:hover {
+      color: var(--theme-color);
+    }
+
+    /* Flecha indicadora */
+    .sidebar-nav > ul > li > p::after {
+      content: '▾';
+      font-size: 12px;
+      margin-left: 6px;
+      transition: transform 0.25s ease;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    /* Cuando está colapsado, rotar la flecha */
+    .sidebar-nav > ul > li.collapsed > p::after {
+      transform: rotate(-90deg);
+    }
+
+    /* Ocultar la lista de hijos cuando está colapsado */
+    .sidebar-nav > ul > li.collapsed > ul {
+      display: none;
+    }
+
+    /* Animación suave al expandir */
+    .sidebar-nav > ul > li > ul {
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
   </style>
 </head>
 <body>
@@ -112,7 +155,7 @@
       repo: '',
       loadSidebar: true,
       hideSidebar: false,
-      subMaxLevel: 3,
+      subMaxLevel: 1,
       auto2top: true,
       maxLevel: 4,
       
@@ -150,106 +193,44 @@
         '/.*/_sidebar.md': '/_sidebar.md',
       },
       
-      // Plugin personalizado para manejar PDFs
+      // Plugins
       plugins: [
-        function(hook, vm) {
-          // Agregar fecha de última actualización
+        // ===== CERRAR MODAL AL CAMBIAR DE PÁGINA =====
+        function(hook) {
           hook.beforeEach(function(content) {
-            var footer = '\n\n---\n*Última actualización: ' + new Date().toLocaleDateString('es-ES') + '*';
-            return content + footer;
+            var modal = document.getElementById('pdf-modal');
+            if (modal && modal.classList.contains('active')) {
+              modal.classList.remove('active');
+              var iframe = document.getElementById('modal-iframe');
+              if (iframe) iframe.src = '';
+              document.body.style.overflow = '';
+            }
+            return content;
           });
-          
-          // Manejar carga de PDFs después de cada renderizado
+        },
+
+        // ===== PLUGIN MENÚ COLAPSABLE =====
+        function(hook) {
           hook.doneEach(function() {
-            // Esperar un poco para que el DOM se actualice
             setTimeout(function() {
-              // Detectar todos los enlaces a PDFs
-              var pdfLinks = document.querySelectorAll('a[href*=".pdf"]');
-              
-              pdfLinks.forEach(function(link) {
-                // Si ya fue procesado, saltar
-                if (link.hasAttribute('data-pdf-processed')) {
-                  return;
+              var items = document.querySelectorAll('.sidebar-nav > ul > li');
+
+              items.forEach(function(li) {
+                var p = li.querySelector(':scope > p');
+                var ul = li.querySelector(':scope > ul');
+
+                // Solo los que tienen <p> (cabecera sin link) Y hijos <ul>
+                if (p && ul) {
+                  // Evitar doble binding
+                  if (p.getAttribute('data-collapsible')) return;
+                  p.setAttribute('data-collapsible', 'true');
+
+                  p.addEventListener('click', function() {
+                    li.classList.toggle('collapsed');
+                  });
                 }
-                
-                link.setAttribute('data-pdf-processed', 'true');
-                
-                // Agregar evento click
-                link.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  
-                  var href = this.getAttribute('href');
-                  
-                  // Normalizar la ruta del PDF
-                  var pdfUrl = href;
-                  if (!href.startsWith('http') && !href.startsWith('/')) {
-                    // Para localhost, usar ruta relativa correcta
-                    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                      pdfUrl = href.startsWith('pdfs/') ? href : 'pdfs/' + href.split('/').pop();
-                    }
-                  }
-                  
-                  console.log('Intentando abrir PDF:', pdfUrl);
-                  
-                  // En móvil, abrir en nueva pestaña directamente
-                  if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
-                    return false;
-                  }
-                  
-                  // En escritorio, intentar mostrar embebido
-                  var mainContent = document.querySelector('section.content');
-                  if (!mainContent) {
-                    mainContent = document.querySelector('.markdown-section');
-                  }
-                  
-                  if (mainContent) {
-                    var viewerId = 'pdf-viewer-' + Date.now();
-                    
-                    // Crear contenedor para el PDF
-                    mainContent.innerHTML = '<div class="pdf-container">' +
-                      '<div id="' + viewerId + '"></div>' +
-                      '</div>';
-                    
-                    // Scroll al inicio
-                    window.scrollTo(0, 0);
-                    
-                    // Intentar cargar PDF con PDFObject
-                    if (typeof PDFObject !== 'undefined' && PDFObject.supportsPDFs) {
-                      PDFObject.embed(pdfUrl, '#' + viewerId, {
-                        height: '800px',
-                        pdfOpenParams: {
-                          view: 'FitH',
-                          pagemode: 'none',
-                          toolbar: 1,
-                          statusbar: 0,
-                          messages: 0,
-                          navpanes: 0,
-                          scrollbar: 1
-                        },
-                        fallbackLink: '<div class="pdf-fallback">' +
-                          '<h3>📄 No se puede mostrar el PDF en este navegador</h3>' +
-                          '<p>Puedes descargarlo o verlo en una nueva pestaña:</p>' +
-                          '<a href="' + pdfUrl + '" download>📥 Descargar PDF</a>' +
-                          '<a href="' + pdfUrl + '" target="_blank">👁️ Ver en nueva pestaña</a>' +
-                          '</div>'
-                      });
-                    } else {
-                      // Fallback: iframe simple
-                      document.getElementById(viewerId).innerHTML = 
-                        '<iframe src="' + pdfUrl + '" class="pdf-viewer" frameborder="0"></iframe>' +
-                        '<div class="pdf-fallback" style="margin-top: 20px;">' +
-                        '<p>Si el PDF no se muestra arriba:</p>' +
-                        '<a href="' + pdfUrl + '" download>📥 Descargar PDF</a>' +
-                        '<a href="' + pdfUrl + '" target="_blank">👁️ Ver en nueva pestaña</a>' +
-                        '</div>';
-                    }
-                  }
-                  
-                  return false;
-                });
               });
-            }, 100);
+            }, 150);
           });
         }
       ]
@@ -273,6 +254,28 @@
   
   <!-- Soporte para PDF -->
   <script src="//cdn.jsdelivr.net/npm/pdfobject@2.2.8/pdfobject.min.js"></script>
+
+  <!-- Funciones globales modal PDF -->
+  <script>
+    function openPreview(url, title) {
+      var modal = document.getElementById("pdf-modal");
+      if (!modal) return;
+      document.getElementById("modal-title").textContent = title;
+      document.getElementById("modal-iframe").src = url;
+      modal.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal() {
+      var modal = document.getElementById("pdf-modal");
+      if (!modal) return;
+      modal.classList.remove("active");
+      document.getElementById("modal-iframe").src = "";
+      document.body.style.overflow = "";
+    }
+    function closePreview(event) {
+      if (event.target === document.getElementById("pdf-modal")) closeModal();
+    }
+  </script>
   
 </body>
 </html>

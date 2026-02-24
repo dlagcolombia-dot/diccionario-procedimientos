@@ -2,6 +2,8 @@
 
 Bienvenido al sistema unificado de documentación de procedimientos del Área de Innovación.
 
+---
+
 ## 🎯 Objetivo
 
 Este diccionario centraliza todos los procedimientos y documentación técnica para facilitar:
@@ -12,67 +14,11 @@ Este diccionario centraliza todos los procedimientos y documentación técnica p
 
 ---
 
-## 🔍 Cómo usar este diccionario
+## 🚀 ¿Por dónde empezar?
 
-### 1️⃣ Buscar
-Utiliza la **barra de búsqueda** en la parte superior para encontrar cualquier término o procedimiento rápidamente.
+Usa el **menú lateral izquierdo** para navegar por las secciones. Puedes colapsar o expandir cada módulo haciendo clic en él.
 
-### 2️⃣ Navegar
-Explora las secciones usando el **menú lateral izquierdo**:
-- 📚 **Referencias Técnicas** - Glosario de términos
-- 📋 **Procedimientos Área Innovación** - Manuales y guías
-
-### 3️⃣ Consultar
-Haz clic en cualquier documento del menú lateral para ver su contenido completo.
-
----
-
-## 💡 Ventajas del Sistema
-
-🚀 **Acceso rápido** - Toda la documentación en un solo lugar
-
-🔍 **Búsqueda inteligente** - Encuentra lo que necesitas en segundos
-
-📱 **Responsive** - Accede desde computadora, tablet o móvil
-
-⚡ **Siempre actualizado** - Documentación centralizada y sincronizada
-
----
-
-## 🛠️ Tecnologías del Área
-
-Nuestro equipo trabaja con tecnologías modernas:
-
-- **Frontend:** Vue.js, Svelte
-- **Backend:** Python, FastAPI, Flask, Node.js
-- **Bases de Datos:** MySQL
-- **Automatización:** Bots ETL
-- **Infraestructura:** Docker, Nginx
-- **Control de Versiones:** Git
-
-👉 *Consulta el glosario en el menú lateral para aprender más sobre cada tecnología*
-
----
-
-## 🎓 Consejos de Uso
-
-> **💡 Tip:** Usa `Ctrl + F` dentro de cualquier documento para buscar palabras específicas
-
-> **💡 Tip:** Los términos técnicos en los procedimientos están explicados en el glosario
-
-> **💡 Tip:** Marca esta página en tus favoritos para acceso rápido
-
-> **💡 Tip:** En móvil, los PDFs se abren automáticamente en el visor nativo de tu navegador
-
----
-
-## 📱 Navegación
-
-**Usa el menú lateral (←) para acceder a:**
-- Glosario técnico completo
-- Todos los procedimientos del área
-- Manuales de usuario
-- Documentación de configuraciones
+> **💡 Tip:** Usa la barra de búsqueda en la parte superior para encontrar cualquier procedimiento rápidamente.
 
 ---
 
