@@ -29,3 +29,5 @@
 * [📄 Procedimientos Área Innovación](informacionSec/procedimientos_area.md)
 
 * [📚 Manuales](informacionSec/manuales.md)
+
+* [📋 Actas](informacionSec/actas.md)
