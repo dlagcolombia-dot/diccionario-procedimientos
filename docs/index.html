@@ -7,7 +7,6 @@
   <meta name="description" content="Sistema unificado de procedimientos y automatizaciones">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   
-  <!-- Desplegando con repo público -->
   <!-- Tema -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
   
@@ -214,24 +213,45 @@
         function(hook) {
           hook.doneEach(function() {
             setTimeout(function() {
-              var items = document.querySelectorAll('.sidebar-nav > ul > li');
+              var currentHash = window.location.hash || '';
+              var topItems = document.querySelectorAll('.sidebar-nav > ul > li');
 
-              items.forEach(function(li) {
+              topItems.forEach(function(li) {
                 var p = li.querySelector(':scope > p');
                 var ul = li.querySelector(':scope > ul');
 
-                // Solo los que tienen <p> (cabecera sin link) Y hijos <ul>
-                if (p && ul) {
-                  // Evitar doble binding
-                  if (p.getAttribute('data-collapsible')) return;
-                  p.setAttribute('data-collapsible', 'true');
+                if (!p || !ul) return;
 
+                // Bind click solo una vez
+                if (!p.getAttribute('data-collapsible')) {
+                  p.setAttribute('data-collapsible', 'true');
                   p.addEventListener('click', function() {
                     li.classList.toggle('collapsed');
                   });
                 }
+
+                // Verificar si algún link hijo coincide con la URL actual
+                var links = li.querySelectorAll('a');
+                var tieneActivo = false;
+                links.forEach(function(a) {
+                  var href = a.getAttribute('href') || '';
+                  if (currentHash.indexOf(href.replace(/^#/, '')) !== -1 && href.length > 2) {
+                    tieneActivo = true;
+                  }
+                });
+
+                if (tieneActivo) {
+                  // Mantener abierto si un hijo coincide con la URL
+                  li.classList.remove('collapsed');
+                } else {
+                  // Si no tiene hijo activo y no estaba ya abierto por click, colapsar
+                  if (!li.getAttribute('data-opened')) {
+                    li.classList.add('collapsed');
+                  }
+                }
               });
-            }, 150);
+
+            }, 50);
           });
         }
       ]

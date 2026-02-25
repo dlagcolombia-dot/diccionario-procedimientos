@@ -16,7 +16,7 @@
 * [🛸 Tecnologías del Área](informacionSec/tecnologias.md)
 
 * 📋 Información Adicional
-  * [⚙️ Área de Innovación](informacionSec/area-innovacion.md)
+  * [⚙️ Área de Innovación](informacionSec/area_innovacion.md)
   * [🔁 Actualizaciones](informacionSec/actualizaciones.md)
 
 * [🎓 Consejos de Uso](informacionSec/consejos.md)
