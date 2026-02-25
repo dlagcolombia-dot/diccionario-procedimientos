@@ -2,8 +2,6 @@
 
 * [🏠 Inicio](/)
 
-* [🎯 Objetivo](informacionSec/objetivo.md)
-
 * 📁 Contenido Disponible
   * [📋 Procedimientos](informacionSec/procedimientos.md)
   * [📊 Glosario Técnico](informacionSec/glosario.md)
@@ -24,7 +22,7 @@
 * [🎓 Consejos de Uso](informacionSec/consejos.md)
 
 * 📗 Referencias Técnicas
-  * [📖 Glosario](informacionSec/glosario.md)
+  * [📖 Glosario](informacionSec/glosario2.md)
 
 * [📄 Procedimientos Área Innovación](informacionSec/procedimientos_area.md)
 
