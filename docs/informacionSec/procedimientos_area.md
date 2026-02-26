@@ -1,4 +1,11 @@
 # 📄 Procedimientos Área Innovación
+Usa el menú lateral para acceder a cada procedimiento:
+
+- 📱 **Cambiar Numero Celular envio Whatsap**
+- ⚙️ **Configuracion de Microservicios y Servidores**
+- 🔄 **Ecosistema y Automatizacion de reportes**
+
+---
 
 <div class="cards-grid">
 
