@@ -7,6 +7,7 @@
     <div class="doc-info">
       <h3>Cambiar Numero Celular envio Whatsap</h3>
       <p>Procedimiento para cambiar el número de celular utilizado en el envío de mensajes por WhatsApp.</p>
+      <div class="doc-date">📅 Agregado: 23/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Cambiar-Numero-Celular-envio-Whatsap.pdf', 'Cambiar Numero Celular envio Whatsap')">👁️ Vista Previa</button>
@@ -19,6 +20,7 @@
     <div class="doc-info">
       <h3>Configuracion de Microservicios y Servidores</h3>
       <p>Guía de configuración para microservicios y servidores del área de innovación.</p>
+      <div class="doc-date">📅 Agregado: 23/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Configuracion-de-Microservicios-y-Servidores.pdf', 'Configuracion de Microservicios y Servidores')">👁️ Vista Previa</button>
@@ -31,6 +33,7 @@
     <div class="doc-info">
       <h3>Ecosistema y Automatizacion de reportes</h3>
       <p>Documentación sobre el ecosistema de automatización de reportes del área.</p>
+      <div class="doc-date">📅 Agregado: 23/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Ecosistema-y-Automatizacion-de-reportes.pdf', 'Ecosistema y Automatizacion de reportes')">👁️ Vista Previa</button>
@@ -85,10 +88,14 @@
   border-bottom: none !important;
 }
 .doc-info p {
-  margin: 0;
+  margin: 0 0 6px 0;
   font-size: 13px;
   color: #6b7280;
   line-height: 1.5;
+}
+.doc-date {
+  font-size: 11px;
+  color: #9ca3af;
 }
 .doc-actions {
   display: flex;
@@ -121,8 +128,6 @@
   transition: background 0.2s;
 }
 .btn-download:hover { background: #e5e7eb; }
-
-/* Modal */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -191,7 +196,6 @@
 .modal-close:hover { background: #fecaca; }
 .modal-body { flex: 1; overflow: hidden; }
 .modal-body iframe { width: 100%; height: 100%; }
-
 @media (max-width: 768px) {
   .cards-grid { grid-template-columns: 1fr; }
   .modal-box { width: 100%; height: 100%; border-radius: 0; }

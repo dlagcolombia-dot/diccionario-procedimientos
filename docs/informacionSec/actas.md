@@ -7,6 +7,7 @@
     <div class="doc-info">
       <h3>Acta Back O Y M</h3>
       <p>Acta correspondiente al área Back O Y M.</p>
+      <div class="doc-date">📅 Agregado: 24/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Acta-Back-O-Y-M.pdf', 'Acta Back O Y M')">👁️ Vista Previa</button>
@@ -19,6 +20,7 @@
     <div class="doc-info">
       <h3>Acta Back Pymes</h3>
       <p>Acta correspondiente al área Back Pymes.</p>
+      <div class="doc-date">📅 Agregado: 23/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Acta-Back-Pymes.pdf', 'Acta Back Pymes')">👁️ Vista Previa</button>
@@ -31,6 +33,7 @@
     <div class="doc-info">
       <h3>Acta Bienvenida Aprendices</h3>
       <p>Acta de bienvenida para aprendices del área de innovación.</p>
+      <div class="doc-date">📅 Agregado: 23/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Acta-Bienvenida-Aprendices.pdf', 'Acta Bienvenida Aprendices')">👁️ Vista Previa</button>
@@ -43,6 +46,7 @@
     <div class="doc-info">
       <h3>Acta Estructura Organizacional R3</h3>
       <p>Acta de estructura organizacional revisión 3.</p>
+      <div class="doc-date">📅 Agregado: 23/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Acta-Estructura-Organizacional-R3.pdf', 'Acta Estructura Organizacional R3')">👁️ Vista Previa</button>
@@ -55,6 +59,7 @@
     <div class="doc-info">
       <h3>Acta Induccion Movil</h3>
       <p>Acta de inducción para el módulo móvil del área.</p>
+      <div class="doc-date">📅 Agregado: 23/02/2026</div>
     </div>
     <div class="doc-actions">
       <button class="btn-preview" onclick="openPreview('pdfs/Acta-Induccion-Movil.pdf', 'Acta Induccion Movil')">👁️ Vista Previa</button>
@@ -109,10 +114,14 @@
   border-bottom: none !important;
 }
 .doc-info p {
-  margin: 0;
+  margin: 0 0 6px 0;
   font-size: 13px;
   color: #6b7280;
   line-height: 1.5;
+}
+.doc-date {
+  font-size: 11px;
+  color: #9ca3af;
 }
 .doc-actions {
   display: flex;
