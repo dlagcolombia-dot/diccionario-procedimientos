@@ -6,153 +6,44 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Sistema unificado de procedimientos y automatizaciones">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-
+  
+  <!-- Tema -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
-
+  
+  <!-- Estilos personalizados -->
   <style>
     :root {
       --theme-color: #2c3e50;
       --sidebar-width: 300px;
     }
-
-    /* ===== BOTÓN ☰ — ARRIBA, SIEMPRE VISIBLE ===== */
-    .sidebar-toggle {
-      top: 10px !important;
-      bottom: auto !important;
-      left: 10px !important;
-      z-index: 101 !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      padding: 4px !important;
-      width: 36px !important;
-    }
-
-    /* Líneas blancas cuando sidebar abierto */
-    .sidebar-toggle span {
-      background-color: #fff !important;
-    }
-
-    /* Líneas oscuras cuando sidebar cerrado */
-    body.close .sidebar-toggle span {
-      background-color: var(--theme-color) !important;
-    }
-
-    /* ===== SEARCH — reposicionar arriba del todo en el sidebar ===== */
-    .sidebar .search {
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 100 !important;
-      background: var(--theme-color) !important;
-      padding: 10px 12px 10px 52px !important; /* 52px = espacio para el ☰ */
-      margin: 0 !important;
-      border-bottom: none !important;
-    }
-
-    .sidebar .search input {
-      border: none !important;
-      border-radius: 16px !important;
-      background: rgba(255,255,255,0.18) !important;
-      color: #fff !important;
-      padding: 6px 12px 6px 28px !important;
-      font-size: 0.85rem !important;
-      width: 100% !important;
-      outline: none !important;
-    }
-
-    .sidebar .search input::placeholder {
-      color: rgba(255,255,255,0.6) !important;
-    }
-
-    .sidebar .search input:focus {
-      background: rgba(255,255,255,0.28) !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
-
-    /* Icono de lupa nativo */
-    .sidebar .search .input-wrap label {
-      color: rgba(255,255,255,0.7) !important;
-    }
-
-    /* Panel de resultados — flotante, no expande la barra */
-    .sidebar .search .results-panel {
-      position: fixed !important;
-      top: 50px !important;
-      left: 0 !important;
-      width: var(--sidebar-width) !important;
-      max-height: 400px !important;
-      overflow-y: auto !important;
-      background: #fff !important;
-      border-radius: 0 0 8px 8px !important;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.18) !important;
-      margin: 0 !important;
-      z-index: 999 !important;
-    }
-
-    .sidebar .search .results-panel .matching-post {
-      border-bottom: 1px solid #f0f0f0 !important;
-      padding: 10px 14px !important;
-    }
-
-    .sidebar .search .results-panel .matching-post:hover {
-      background: #f5f7f9 !important;
-    }
-
-    .sidebar .search .results-panel h2 {
-      font-size: 0.88rem !important;
-      color: var(--theme-color) !important;
-      margin: 0 0 3px !important;
-    }
-
-    .sidebar .search .results-panel p {
-      font-size: 0.78rem !important;
-      color: #888 !important;
-      margin: 0 !important;
-    }
-
-    /* Texto "sin resultados" */
-    .sidebar .search .results-panel .empty-message {
-      padding: 14px !important;
-      text-align: center !important;
-      color: #aaa !important;
-      font-size: 0.85rem !important;
-    }
-
-    /* ===== SIDEBAR GENERAL ===== */
+    
     .sidebar {
       background: #f8f9fa;
-      padding-top: 0 !important;
     }
-
-    /* El nombre/título del sitio que pone Docsify */
-    .sidebar > h1 {
-      margin-top: 8px;
-      user-select: none !important;
-      -webkit-user-select: none !important;
+    
+    .sidebar-nav > ul > li > p {
+      font-weight: bold;
+      margin: 10px 0 5px 0;
     }
-
-    /* Evitar selección en todo el sidebar */
-    .sidebar {
-      user-select: none !important;
-      -webkit-user-select: none !important;
+    
+    .search input {
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
     }
-
-    /* Pero sí permitir selección en el input de búsqueda */
-    .sidebar .search input {
-      user-select: text !important;
-      -webkit-user-select: text !important;
+    
+    .pdf-container {
+      width: 100%;
+      min-height: 600px;
+      margin: 20px 0;
     }
-
-    /* ===== PDF ===== */
-    .pdf-container { width: 100%; min-height: 600px; margin: 20px 0; }
-
+    
     .pdf-viewer {
       width: 100%;
       height: 800px;
       border: 1px solid #ddd;
       border-radius: 5px;
     }
-
+    
     .pdf-fallback {
       background: #f5f5f5;
       padding: 30px;
@@ -160,9 +51,12 @@
       border-radius: 8px;
       border: 2px dashed #ddd;
     }
-
-    .pdf-fallback h3 { color: var(--theme-color); margin-bottom: 20px; }
-
+    
+    .pdf-fallback h3 {
+      color: var(--theme-color);
+      margin-bottom: 20px;
+    }
+    
     .pdf-fallback a {
       display: inline-block;
       background: var(--theme-color);
@@ -174,10 +68,11 @@
       font-weight: bold;
       transition: opacity 0.3s;
     }
-
-    .pdf-fallback a:hover { opacity: 0.8; }
-
-    /* ===== TARJETAS ===== */
+    
+    .pdf-fallback a:hover {
+      opacity: 0.8;
+    }
+    
     .procedure-card {
       background: #f5f5f5;
       padding: 15px;
@@ -185,22 +80,34 @@
       border-radius: 8px;
       border-left: 4px solid var(--theme-color);
     }
-
-    .content .sidebar-nav { display: none !important; }
-
-    /* ===== RESPONSIVE ===== */
+    
+    /* Ocultar el TOC automático del README */
+    .content .sidebar-nav {
+      display: none !important;
+    }
+    
+    /* Mejoras para móvil */
     @media screen and (max-width: 768px) {
-      .pdf-viewer { height: 500px; }
-      .sidebar { font-size: 14px; }
-      .pdf-fallback a { display: block; margin: 10px 0; }
+      .pdf-viewer {
+        height: 500px;
+      }
+      
+      .sidebar {
+        font-size: 14px;
+      }
+      
+      .pdf-fallback a {
+        display: block;
+        margin: 10px 0;
+      }
     }
 
     /* ===== MENÚ COLAPSABLE ===== */
+
+    /* El <p> que actúa como cabecera de grupo (sin link) */
     .sidebar-nav > ul > li > p {
       cursor: pointer;
       user-select: none;
-      font-weight: bold;
-      margin: 10px 0 5px 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -208,8 +115,11 @@
       transition: color 0.2s;
     }
 
-    .sidebar-nav > ul > li > p:hover { color: var(--theme-color); }
+    .sidebar-nav > ul > li > p:hover {
+      color: var(--theme-color);
+    }
 
+    /* Flecha indicadora */
     .sidebar-nav > ul > li > p::after {
       content: '▾';
       font-size: 12px;
@@ -219,15 +129,26 @@
       flex-shrink: 0;
     }
 
-    .sidebar-nav > ul > li.collapsed > p::after { transform: rotate(-90deg); }
-    .sidebar-nav > ul > li.collapsed > ul { display: none; }
-    .sidebar-nav > ul > li > ul { overflow: hidden; transition: all 0.25s ease; }
+    /* Cuando está colapsado, rotar la flecha */
+    .sidebar-nav > ul > li.collapsed > p::after {
+      transform: rotate(-90deg);
+    }
+
+    /* Ocultar la lista de hijos cuando está colapsado */
+    .sidebar-nav > ul > li.collapsed > ul {
+      display: none;
+    }
+
+    /* Animación suave al expandir */
+    .sidebar-nav > ul > li > ul {
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
   </style>
 </head>
 <body>
-
   <div id="app">Cargando...</div>
-
+  
   <script>
     window.$docsify = {
       name: '📚 Diccionario de Procedimientos',
@@ -236,10 +157,16 @@
       hideSidebar: false,
       subMaxLevel: 1,
       auto2top: true,
+      executeScript: true,
       maxLevel: 4,
-
-      toc: { tocMaxLevel: 0, target: 'h2' },
-
+      
+      // Desactivar el índice automático del contenido
+      toc: {
+        tocMaxLevel: 0,
+        target: 'h2'
+      },
+      
+      // Búsqueda
       search: {
         maxAge: 86400000,
         paths: 'auto',
@@ -248,14 +175,28 @@
         depth: 6,
         hideOtherSidebarContent: false,
       },
-
-      pagination: { previousText: 'Anterior', nextText: 'Siguiente' },
-      copyCode: { buttonText: 'Copiar', errorText: 'Error', successText: '✓ Copiado' },
-      alias: { '/.*/_sidebar.md': '/_sidebar.md' },
-
+      
+      // Paginación
+      pagination: {
+        previousText: 'Anterior',
+        nextText: 'Siguiente',
+      },
+      
+      // Copiar código
+      copyCode: {
+        buttonText: 'Copiar',
+        errorText: 'Error',
+        successText: '✓ Copiado'
+      },
+      
+      // Alias para evitar problemas con rutas
+      alias: {
+        '/.*/_sidebar.md': '/_sidebar.md',
+      },
+      
+      // Plugins
       plugins: [
-
-        // CERRAR MODAL AL CAMBIAR PÁGINA
+        // ===== CERRAR MODAL AL CAMBIAR DE PÁGINA =====
         function(hook) {
           hook.beforeEach(function(content) {
             var modal = document.getElementById('pdf-modal');
@@ -269,7 +210,7 @@
           });
         },
 
-        // MENÚ COLAPSABLE
+        // ===== PLUGIN MENÚ COLAPSABLE =====
         function(hook) {
           hook.doneEach(function() {
             setTimeout(function() {
@@ -279,13 +220,18 @@
               topItems.forEach(function(li) {
                 var p = li.querySelector(':scope > p');
                 var ul = li.querySelector(':scope > ul');
+
                 if (!p || !ul) return;
 
+                // Bind click solo una vez
                 if (!p.getAttribute('data-collapsible')) {
                   p.setAttribute('data-collapsible', 'true');
-                  p.addEventListener('click', function() { li.classList.toggle('collapsed'); });
+                  p.addEventListener('click', function() {
+                    li.classList.toggle('collapsed');
+                  });
                 }
 
+                // Verificar si algún link hijo coincide con la URL actual
                 var links = li.querySelectorAll('a');
                 var tieneActivo = false;
                 links.forEach(function(a) {
@@ -296,26 +242,42 @@
                 });
 
                 if (tieneActivo) {
+                  // Mantener abierto si un hijo coincide con la URL
                   li.classList.remove('collapsed');
                 } else {
-                  if (!li.getAttribute('data-opened')) li.classList.add('collapsed');
+                  // Si no tiene hijo activo y no estaba ya abierto por click, colapsar
+                  if (!li.getAttribute('data-opened')) {
+                    li.classList.add('collapsed');
+                  }
                 }
               });
+
             }, 50);
           });
         }
-
       ]
     }
   </script>
-
+  
+  <!-- Docsify core -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  
+  <!-- Plugin de búsqueda -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  
+  <!-- Plugin de zoom para imágenes -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  
+  <!-- Plugin de copiar código -->
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+  
+  <!-- Plugin de paginación -->
   <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  
+  <!-- Soporte para PDF -->
   <script src="//cdn.jsdelivr.net/npm/pdfobject@2.2.8/pdfobject.min.js"></script>
 
+  <!-- Funciones globales modal PDF -->
   <script>
     function openPreview(url, title) {
       var modal = document.getElementById("pdf-modal");
@@ -325,7 +287,6 @@
       modal.classList.add("active");
       document.body.style.overflow = "hidden";
     }
-
     function closeModal() {
       var modal = document.getElementById("pdf-modal");
       if (!modal) return;
@@ -333,11 +294,10 @@
       document.getElementById("modal-iframe").src = "";
       document.body.style.overflow = "";
     }
-
     function closePreview(event) {
       if (event.target === document.getElementById("pdf-modal")) closeModal();
     }
   </script>
-
+  
 </body>
 </html>

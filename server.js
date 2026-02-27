@@ -1,0 +1,144 @@
+const express = require('express');
+const multer  = require('multer');
+const cors    = require('cors');
+const path    = require('path');
+const fs      = require('fs');
+
+const app  = express();
+const PORT = 3001;
+
+// ── Rutas base ──────────────────────────────────────────────
+const DOCS_DIR = path.join(__dirname, 'docs');
+const PDFS_DIR = path.join(DOCS_DIR, 'pdfs');
+const DATA_DIR = path.join(__dirname, 'data');
+
+// Crear carpetas si no existen
+[PDFS_DIR, DATA_DIR].forEach(dir => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
+
+// ── Middlewares ─────────────────────────────────────────────
+app.use(cors());
+app.use(express.json());
+app.use(express.static(DOCS_DIR)); // Sirve Docsify
+
+// ── Multer: guardar PDFs en docs/pdfs ───────────────────────
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, PDFS_DIR),
+  filename: (req, file, cb) => {
+    // Nombre limpio: espacios → guiones
+    const clean = file.originalname
+      .replace(/\s+/g, '-')
+      .replace(/[^a-zA-Z0-9.\-_]/g, '');
+    cb(null, clean);
+  }
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') cb(null, true);
+    else cb(new Error('Solo se permiten archivos PDF'));
+  },
+  limits: { fileSize: 20 * 1024 * 1024 } // 20MB máx
+});
+
+// ── Helpers JSON ─────────────────────────────────────────────
+function getDataFile(modulo) {
+  return path.join(DATA_DIR, `${modulo}.json`);
+}
+
+function readData(modulo) {
+  const file = getDataFile(modulo);
+  if (!fs.existsSync(file)) return [];
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function writeData(modulo, data) {
+  fs.writeFileSync(getDataFile(modulo), JSON.stringify(data, null, 2));
+}
+
+function today() {
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+// ── MÓDULOS válidos ──────────────────────────────────────────
+const MODULOS_VALIDOS = ['actas', 'manuales', 'procedimientos'];
+
+// ── GET /api/:modulo → listar documentos ────────────────────
+app.get('/api/:modulo', (req, res) => {
+  const { modulo } = req.params;
+  if (!MODULOS_VALIDOS.includes(modulo)) {
+    return res.status(400).json({ error: 'Módulo no válido' });
+  }
+  res.json(readData(modulo));
+});
+
+// ── POST /api/:modulo → subir documento ─────────────────────
+app.post('/api/:modulo', upload.single('pdf'), (req, res) => {
+  const { modulo } = req.params;
+
+  if (!MODULOS_VALIDOS.includes(modulo)) {
+    return res.status(400).json({ error: 'Módulo no válido' });
+  }
+
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se recibió ningún PDF' });
+  }
+
+  const { titulo, descripcion } = req.body;
+
+  if (!titulo) {
+    return res.status(400).json({ error: 'El título es obligatorio' });
+  }
+
+  const nuevoDoc = {
+    id: Date.now(),
+    titulo,
+    descripcion: descripcion || '',
+    archivo: `pdfs/${req.file.filename}`,
+    fecha: today()
+  };
+
+  const data = readData(modulo);
+  data.push(nuevoDoc);
+  writeData(modulo, data);
+
+  console.log(`[${modulo.toUpperCase()}] Nuevo documento: ${titulo}`);
+  res.status(201).json({ mensaje: 'Documento subido correctamente', doc: nuevoDoc });
+});
+
+// ── DELETE /api/:modulo/:id → eliminar documento ─────────────
+app.delete('/api/:modulo/:id', (req, res) => {
+  const { modulo, id } = req.params;
+
+  if (!MODULOS_VALIDOS.includes(modulo)) {
+    return res.status(400).json({ error: 'Módulo no válido' });
+  }
+
+  let data = readData(modulo);
+  const doc = data.find(d => d.id === Number(id));
+
+  if (!doc) {
+    return res.status(404).json({ error: 'Documento no encontrado' });
+  }
+
+  // Eliminar archivo PDF
+  const pdfPath = path.join(DOCS_DIR, doc.archivo);
+  if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
+
+  data = data.filter(d => d.id !== Number(id));
+  writeData(modulo, data);
+
+  res.json({ mensaje: 'Documento eliminado correctamente' });
+});
+
+// ── Iniciar servidor ─────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`📁 Sirviendo Docsify desde: ${DOCS_DIR}`);
+});
