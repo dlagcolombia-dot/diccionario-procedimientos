@@ -4,8 +4,13 @@
   "description": "Sistema unificado de documentación de procedimientos y automatizaciones",
   "scripts": {
     "dev": "docsify serve docs",
-    "start": "docsify serve docs",
-    "convert": "python convert_pdfs.py"
+    "start": "node server.js",
+    "convert": "python convert_pdfs.py",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop diccionario-procedimientos",
+    "pm2:restart": "pm2 restart diccionario-procedimientos",
+    "pm2:status": "pm2 status",
+    "pm2:logs": "pm2 logs diccionario-procedimientos"
   },
   "keywords": [
     "documentacion",
@@ -16,11 +21,12 @@
   "author": "Tu Nombre",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
-    "multer": "^1.4.5-lts.1",
-    "cors": "^2.8.5"
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
-    "docsify-cli": "^4.4.4"
+    "docsify-cli": "^4.4.4",
+    "pm2": "^6.0.14"
   }
 }
