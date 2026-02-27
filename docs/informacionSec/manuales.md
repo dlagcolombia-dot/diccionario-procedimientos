@@ -28,6 +28,19 @@
     </div>
   </div>
 
+  <div class="doc-card">
+    <div class="doc-icon">⚙️</div>
+    <div class="doc-info">
+      <h3>Manual Configuración DSN</h3>
+      <p>Manual de configuración de DSN (Data Source Name) para conexiones de base de datos.</p>
+      <div class="doc-date">📅 Agregado: 27/02/2026</div>
+    </div>
+    <div class="doc-actions">
+      <button class="btn-preview" onclick="openPreview('pdfs/Manual-Configuracion-DSN.pdf', 'Manual Configuración DSN')">👁️ Vista Previa</button>
+      <a class="btn-download" href="pdfs/Manual-Configuracion-DSN.pdf" download>📥 Descargar</a>
+    </div>
+  </div>
+
 </div>
 
 <!-- Modal vista previa -->
