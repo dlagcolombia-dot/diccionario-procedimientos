@@ -78,6 +78,9 @@ function updateUIForAuth() {
   // Agregar botón de logout si está autenticado
   if (isAuth && user) {
     addLogoutButton(user);
+  } else {
+    // Agregar botón de login si NO está autenticado
+    addLoginButton();
   }
 }
 
@@ -115,6 +118,44 @@ function addLogoutButton(user) {
       font-size: 12px;
       font-weight: 600;
     ">Cerrar Sesión</button>
+  `;
+  
+  document.body.appendChild(authInfo);
+}
+
+// Agregar botón de login
+function addLoginButton() {
+  // Verificar si ya existe
+  if (document.getElementById('auth-info')) return;
+  
+  const authInfo = document.createElement('div');
+  authInfo.id = 'auth-info';
+  authInfo.style.cssText = `
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  `;
+  
+  authInfo.innerHTML = `
+    <button onclick="window.location.href='/login.html'" style="
+      background: #2c3e50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    ">🔐 Iniciar Sesión</button>
   `;
   
   document.body.appendChild(authInfo);
