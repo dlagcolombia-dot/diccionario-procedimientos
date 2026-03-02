@@ -3,7 +3,7 @@
 // URL del backend
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:3001'
-  : 'https://diccionario-backend-gnta.onrender.com';
+  : 'https://diccionario-backend-ahtd.onrender.com';
 
 // Obtener token del localStorage
 function getAuthToken() {
