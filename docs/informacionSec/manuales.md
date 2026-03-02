@@ -182,7 +182,7 @@
 
 <script>
 (function() {
-  var API = 'http://localhost:3001/api/manuales';
+  var API = (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com') + '/api/manuales';
 
   function toggleFormManuales() {
     var f = document.getElementById('upload-form-manuales');
