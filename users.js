@@ -8,7 +8,7 @@ const users = [
     username: 'admin',
     // Contraseña: admin123
     password: '$2b$10$dRV9mzkJMwbFImRIwoWQEO7WMgBo3WjRrQEuI8YT9oRge2VbV2GCe',
-    role: 'admin'
+    role: 'Usuario'
   }
 ];
 
