@@ -1,4 +1,4 @@
-# Headers para Netlify
+# Headers para Netlify - Seguridad mejorada
 
 /*.pdf
   Content-Type: application/pdf
@@ -13,6 +13,24 @@
   X-Content-Type-Options: nosniff
 
 /*
+  # Forzar HTTPS
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  
+  # Protección contra clickjacking
   X-Frame-Options: SAMEORIGIN
+  
+  # Protección XSS
   X-XSS-Protection: 1; mode=block
+  
+  # Prevenir MIME sniffing
+  X-Content-Type-Options: nosniff
+  
+  # Política de referrer
   Referrer-Policy: strict-origin-when-cross-origin
+  
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://diccionario-backend-ahtd.onrender.com http://localhost:3001; frame-src 'self'
+  
+  # Permissions Policy
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+

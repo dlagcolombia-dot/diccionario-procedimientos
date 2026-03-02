@@ -4,6 +4,13 @@
   publish = "."
   command = "echo 'No build required'"
 
+# Forzar HTTPS
+[[redirects]]
+  from = "http://procesosinnovacion.netlify.app/*"
+  to = "https://procesosinnovacion.netlify.app/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -25,10 +32,28 @@
     Access-Control-Allow-Origin = "*"
     X-Content-Type-Options = "nosniff"
 
-# Headers para archivos estáticos
+# Headers de seguridad para todos los archivos
 [[headers]]
   for = "/*"
   [headers.values]
+    # Forzar HTTPS
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    
+    # Protección contra clickjacking
     X-Frame-Options = "SAMEORIGIN"
+    
+    # Protección XSS
     X-XSS-Protection = "1; mode=block"
+    
+    # Prevenir MIME sniffing
+    X-Content-Type-Options = "nosniff"
+    
+    # Política de referrer
     Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Content Security Policy
+    Content-Security-Policy = "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://diccionario-backend-ahtd.onrender.com http://localhost:3001; frame-src 'self'"
+    
+    # Permissions Policy
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
