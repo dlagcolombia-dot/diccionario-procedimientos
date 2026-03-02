@@ -5,7 +5,7 @@
 </div>
 
 <div id="upload-form" class="upload-form" style="display:none">
-  <h3>📤 Subir nueva Acta</h3>
+  <h3> Subir nueva Acta</h3>
   <div class="form-grid">
     <div class="form-group">
       <label>Título *</label>
@@ -22,7 +22,7 @@
   </div>
   <div class="form-actions">
     <button class="btn-cancelar" onclick="toggleForm()">Cancelar</button>
-    <button class="btn-subir" onclick="subirDoc('actas')">📤 Subir</button>
+    <button class="btn-subir" onclick="subirDoc('actas')"> Subir</button>
   </div>
   <div id="upload-msg" class="upload-msg"></div>
 </div>
@@ -199,7 +199,7 @@
       .then(function(r) { return r.json(); })
       .then(function(docs) {
         if (!docs.length) {
-          grid.innerHTML = '<div class="empty-state">📭 No hay actas todavía. ¡Sube la primera!</div>';
+          grid.innerHTML = '<div class="empty-state"> No hay actas todavía. ¡Sube la primera!</div>';
           return;
         }
         grid.innerHTML = docs.map(function(d) {
@@ -212,14 +212,14 @@
             '</div>' +
             '<div class="doc-actions">' +
               '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
-              '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
+              '<a class="btn-download" href="' + d.archivo + '" download> Descargar</a>' +
               '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
             '</div>' +
           '</div>';
         }).join('');
       })
       .catch(function() {
-        grid.innerHTML = '<div class="empty-state">⚠️ No se pudo conectar al servidor.</div>';
+        grid.innerHTML = '<div class="empty-state"> No se pudo conectar al servidor.</div>';
       });
   }
 
@@ -231,7 +231,7 @@
 
     if (!titulo || !pdf) {
       msg.className = 'upload-msg err';
-      msg.textContent = '⚠️ El título y el PDF son obligatorios.';
+      msg.textContent = ' El título y el PDF son obligatorios.';
       return;
     }
 
@@ -255,7 +255,7 @@
       .then(function(res) {
         if (res.error) throw new Error(res.error);
         msg.className = 'upload-msg ok';
-        msg.textContent = '✅ Acta subida correctamente!';
+        msg.textContent = ' Acta subida correctamente!';
         document.getElementById('input-titulo').value = '';
         document.getElementById('input-desc').value = '';
         document.getElementById('input-pdf').value = '';
@@ -264,7 +264,7 @@
       })
       .catch(function(e) {
         msg.className = 'upload-msg err';
-        msg.textContent = '❌ Error: ' + e.message;
+        msg.textContent = ' Error: ' + e.message;
       })
       .finally(function() {
         btn.textContent = '📤 Subir';
