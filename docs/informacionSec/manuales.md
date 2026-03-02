@@ -1,11 +1,19 @@
 # 📚 Manuales
 
+<div class="search-bar">
+  <input type="text" id="search-manuales" placeholder="🔍 Buscar manual..." class="search-input" />
+</div>
+
+<div class="upload-bar">
+  <button class="btn-abrir-form" onclick="toggleFormManuales()">➕ Agregar Manual</button>
+</div>
+
 <div class="upload-bar">
   <button class="btn-abrir-form" onclick="toggleFormManuales()">➕ Agregar Manual</button>
 </div>
 
 <div id="upload-form-manuales" class="upload-form-manuales" style="display:none">
-  <h3>📤 Subir nueva Manual</h3>
+  <h3> Subir nuevo Manual</h3>
   <div class="form-grid">
     <div class="form-group">
       <label>Título *</label>
@@ -22,7 +30,7 @@
   </div>
   <div class="form-actions">
     <button class="btn-cancelar" onclick="toggleFormManuales()">Cancelar</button>
-    <button class="btn-subir" onclick="subirDoc('manuales')">📤 Subir</button>
+    <button class="btn-subir" onclick="subirDoc('manuales')"> Subir</button>
   </div>
   <div id="upload-msg-manuales" class="upload-msg-manuales"></div>
 </div>
@@ -34,12 +42,48 @@
     <div class="modal-header">
       <button class="btn-volver" onclick="closeModal()">← Volver</button>
       <span id="modal-title">Vista Previa</span>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
+<style>
+.search-bar {
+  margin: 16px 0;
+}
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+.search-input:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+.upload-bar { margin: 16px 0; }
     <div class="modal-body">
       <iframe id="modal-iframe" src="" frameborder="0"></iframe>
-    </div>
-  </div>
+<style>
+.search-bar {
+  margin: 16px 0;
+}
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+.search-input:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+.upload-bar { margin: 16px 0; }
 </div>
 
 <style>
@@ -136,33 +180,49 @@
   flex: 1; padding: 8px 12px; background: #f3f4f6; color: #374151;
   border-radius: 7px; text-decoration: none !important; font-size: 13px;
   font-weight: 600; text-align: center; transition: background 0.2s;
-}
-.btn-download:hover { background: #e5e7eb; }
-.btn-eliminar {
-  padding: 8px 12px; background: #fee2e2; color: #dc2626;
-  border: none; border-radius: 7px; cursor: pointer; font-size: 13px;
+<script>
+(function() {
+  var API = (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com') + '/api/manuales';
+  var allDocs = [];
+
+  function toggleFormManuales() {
+  function toggleFormManuales() {x; cursor: pointer; font-size: 13px;
   font-weight: 600; transition: background 0.2s;
 }
 .btn-eliminar:hover { background: #fecaca; }
 .empty-state { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; }
 .modal-overlay {
   display: none; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%; background: rgba(0,0,0,0.6);
-  z-index: 9999; align-items: center; justify-content: center;
-}
-.modal-overlay.active { display: flex; }
-.modal-box {
-  background: #fff; border-radius: 12px; width: 90%; max-width: 900px;
-  height: 85vh; display: flex; flex-direction: column; overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid #e5e7eb; gap: 12px;
-}
-.btn-volver {
-  background: #f3f4f6; border: none; border-radius: 7px; padding: 7px 14px;
-  cursor: pointer; font-size: 13px; font-weight: 600; color: #374151; white-space: nowrap;
+  function cargarDocs() {
+    var grid = document.getElementById('manuales-grid');
+    if (!grid) return;
+    fetch(API)
+      .then(function(docs) {
+        allDocs = docs;
+        if (!docs.length) {{
+        allDocs = docs; // Guardar para búsqueda
+        renderDocs(docs);
+      })
+      .catch(function() {
+        grid.innerHTML = '<div class="empty-state">⚠️ No se pudo conectar al servidor.</div>';
+      });
+  }
+
+  function renderDocs(docs) {
+    var grid = document.getElementById('manuales-grid');
+    if (!grid) return;
+    
+    if (!docs.length) {
+      grid.innerHTML = '<div class="empty-state">📭 No hay manuales todavía. ¡Sube la primera!</div>';
+      return;
+    }
+    
+    // Ordenar del más antiguo al más nuevo
+        }).join('');
+  }
+
+  window.subirDoc = function(modulo) {
+  function toggleFormManuales() {x; font-weight: 600; color: #374151; white-space: nowrap;
 }
 .btn-volver:hover { background: #e5e7eb; }
 #modal-title { flex: 1; font-weight: 700; font-size: 14px; color: #1f2937; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -202,36 +262,109 @@
           grid.innerHTML = '<div class="empty-state">📭 No hay manuales todavía. ¡Sube la primera!</div>';
           return;
         }
+        
+        // Ordenar del más antiguo al más nuevo (por ID que es timestamp)
+        docs.sort(function(a, b) { return a.id - b.id; });
+        
         grid.innerHTML = docs.map(function(d) {
           return '<div class="doc-card">' +
             '<div class="doc-icon">📄</div>' +
             '<div class="doc-info">' +
               '<h3>' + d.titulo + '</h3>' +
               (d.descripcion ? '<p>' + d.descripcion + '</p>' : '') +
-              '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
-            '</div>' +
-            '<div class="doc-actions">' +
-              '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
-              '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
-              '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
-            '</div>' +
-          '</div>';
-        }).join('');
-      })
-      .catch(function() {
-        grid.innerHTML = '<div class="empty-state">⚠️ No se pudo conectar al servidor.</div>';
-      });
+  window.eliminarDoc = function(id) {
+    if (!confirm('¿Seguro que quieres eliminar este documento?')) return;
+    fetch(API + '/' + id, { 
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+      }
+    })
+      .then(function(r) { return r.json(); })
+      .then(function() { cargarDocs(); })
+      .catch(function() { alert('Error al eliminar el documento.'); });
+  };
+
+  // Función de búsqueda
+  function buscarManuales() {
+    var searchTerm = document.getElementById('search-manuales').value.toLowerCase();
+    var filtered = allDocs.filter(function(doc) {
+      return doc.titulo.toLowerCase().includes(searchTerm) || 
+             (doc.descripcion && doc.descripcion.toLowerCase().includes(searchTerm));
+    });
+    
+    var grid = document.getElementById('manuales-grid');
+    if (!grid) return;
+    
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="empty-state">📭 No se encontraron manuales</div>';
+      return;
+    }
+    
+    grid.innerHTML = filtered.map(function(d) {
+      return '<div class="doc-card">' +
+        '<div class="doc-icon">📄</div>' +
+        '<div class="doc-info">' +
+          '<h3>' + d.titulo + '</h3>' +
+          (d.descripcion ? '<p>' + d.descripcion + '</p>' : '') +
+          '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
+        '</div>' +
+        '<div class="doc-actions">' +
+          '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
+          '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
+          '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
   }
 
-  window.subirDoc = function(modulo) {
-    var titulo = document.getElementById('input-titulo-m').value.trim();
-    var desc   = document.getElementById('input-desc-m').value.trim();
-    var pdf    = document.getElementById('input-pdf-m').files[0];
+  // Event listener para búsqueda
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('search-manuales');
+    if (searchInput) {
+      searchInput.addEventListener('input', buscarManuales);
+    }
+  });
+
+  // Cargar al iniciar
+    })
+      .then(function(r) { return r.json(); })
+      .then(function() { cargarDocs(); })
+      .catch(function() { alert('Error al eliminar el documento.'); });
+  };
+
+  // Función de búsqueda
+  function buscarManuales() {
+    var searchTerm = document.getElementById('search-manuales').value.toLowerCase();
+    var filtered = allDocs.filter(function(doc) {
+      return doc.titulo.toLowerCase().includes(searchTerm) || 
+             (doc.descripcion && doc.descripcion.toLowerCase().includes(searchTerm));
+    });
+    renderDocs(filtered);
+  }
+
+  // Event listener para búsqueda
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('search-manuales');
+    if (searchInput) {
+      searchInput.addEventListener('input', buscarManuales);
+    }
+  });
+
+  // Cargar al iniciar
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cargarDocs);
+  } else {
+    cargarDocs();
+  }
+  setTimeout(cargarDocs, 300);
+})();
+</script>df    = document.getElementById('input-pdf-m').files[0];
     var msg    = document.getElementById('upload-msg-manuales');
 
     if (!titulo || !pdf) {
       msg.className = 'upload-msg-manuales err';
-      msg.textContent = '⚠️ El título y el PDF son obligatorios.';
+      msg.textContent = ' El título y el PDF son obligatorios.';
       return;
     }
 
@@ -255,7 +388,7 @@
       .then(function(res) {
         if (res.error) throw new Error(res.error);
         msg.className = 'upload-msg-manuales ok';
-        msg.textContent = '✅ Manual subida correctamente!';
+        msg.textContent = ' Manual subida correctamente!';
         document.getElementById('input-titulo-m').value = '';
         document.getElementById('input-desc-m').value = '';
         document.getElementById('input-pdf-m').value = '';
@@ -264,17 +397,22 @@
       })
       .catch(function(e) {
         msg.className = 'upload-msg-manuales err';
-        msg.textContent = '❌ Error: ' + e.message;
+        msg.textContent = ' Error: ' + e.message;
       })
       .finally(function() {
-        btn.textContent = '📤 Subir';
+        btn.textContent = ' Subir';
         btn.disabled = false;
       });
   };
 
   window.eliminarDoc = function(id) {
     if (!confirm('¿Seguro que quieres eliminar este documento?')) return;
-    fetch(API + '/' + id, { method: 'DELETE' })
+    fetch(API + '/' + id, { 
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+      }
+    })
       .then(function(r) { return r.json(); })
       .then(function() { cargarDocs(); })
       .catch(function() { alert('Error al eliminar el documento.'); });
