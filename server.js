@@ -3,9 +3,15 @@ const multer  = require('multer');
 const cors    = require('cors');
 const path    = require('path');
 const fs      = require('fs');
+const jwt     = require('jsonwebtoken');
+const session = require('express-session');
+const { findUserByUsername, verifyPassword } = require('./users');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
+
+// Clave secreta para JWT (cámbiala en producción)
+const JWT_SECRET = process.env.JWT_SECRET || 'tu-clave-secreta-super-segura-cambiala';
 
 // ── Rutas base ──────────────────────────────────────────────
 const DOCS_DIR = path.join(__dirname, 'docs');
@@ -18,9 +24,68 @@ const DATA_DIR = path.join(__dirname, 'data');
 });
 
 // ── Middlewares ─────────────────────────────────────────────
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
+app.use(session({
+  secret: JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 horas
+}));
 app.use(express.static(DOCS_DIR)); // Sirve Docsify
+
+// ── Middleware de autenticación ─────────────────────────────
+function requireAuth(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({ error: 'No autorizado. Inicia sesión primero.' });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Token inválido o expirado.' });
+  }
+}
+
+// ── Ruta de LOGIN ───────────────────────────────────────────
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
+  }
+  
+  const user = findUserByUsername(username);
+  
+  if (!user || !verifyPassword(password, user.password)) {
+    return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+  }
+  
+  // Crear token JWT
+  const token = jwt.sign(
+    { id: user.id, username: user.username, role: user.role },
+    JWT_SECRET,
+    { expiresIn: '24h' }
+  );
+  
+  res.json({
+    mensaje: 'Login exitoso',
+    token,
+    user: { id: user.id, username: user.username, role: user.role }
+  });
+});
+
+// ── Ruta para verificar sesión ──────────────────────────────
+app.get('/api/verify', requireAuth, (req, res) => {
+  res.json({ user: req.user });
+});
 
 // ── Multer: guardar PDFs en docs/pdfs ───────────────────────
 const storage = multer.diskStorage({
@@ -79,7 +144,7 @@ app.get('/api/:modulo', (req, res) => {
 });
 
 // ── POST /api/:modulo → subir documento ─────────────────────
-app.post('/api/:modulo', upload.single('pdf'), (req, res) => {
+app.post('/api/:modulo', requireAuth, upload.single('pdf'), (req, res) => {
   const { modulo } = req.params;
 
   if (!MODULOS_VALIDOS.includes(modulo)) {
@@ -113,7 +178,7 @@ app.post('/api/:modulo', upload.single('pdf'), (req, res) => {
 });
 
 // ── DELETE /api/:modulo/:id → eliminar documento ─────────────
-app.delete('/api/:modulo/:id', (req, res) => {
+app.delete('/api/:modulo/:id', requireAuth, (req, res) => {
   const { modulo, id } = req.params;
 
   if (!MODULOS_VALIDOS.includes(modulo)) {
