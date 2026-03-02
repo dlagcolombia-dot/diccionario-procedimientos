@@ -25,8 +25,21 @@ const DATA_DIR = path.join(__dirname, 'data');
 
 // ── Middlewares ─────────────────────────────────────────────
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://procesosinnovacion.netlify.app'],
-  credentials: true
+  origin: function(origin, callback) {
+    // Permitir peticiones sin origin (como Postman) y desde localhost y Netlify
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://procesosinnovacion.netlify.app'
+    ];
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Permitir todos por ahora para debugging
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(session({
