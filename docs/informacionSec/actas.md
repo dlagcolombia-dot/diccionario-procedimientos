@@ -274,7 +274,12 @@
 
   window.eliminarDoc = function(id) {
     if (!confirm('¿Seguro que quieres eliminar este documento?')) return;
-    fetch(API + '/' + id, { method: 'DELETE' })
+    fetch(API + '/' + id, { 
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+      }
+    })
       .then(function(r) { return r.json(); })
       .then(function() { cargarDocs(); })
       .catch(function() { alert('Error al eliminar el documento.'); });

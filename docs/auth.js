@@ -122,10 +122,8 @@ function addLogoutButton(user) {
 
 // Inicializar cuando cargue la página
 document.addEventListener('DOMContentLoaded', () => {
-  // Verificar autenticación solo si NO estamos en la página de login
-  if (!window.location.pathname.includes('login.html')) {
-    requireAuth();
-  }
+  // NO forzar login automáticamente, permitir navegación sin autenticación
+  // Solo se pedirá login al intentar subir o eliminar documentos
   updateUIForAuth();
 });
 

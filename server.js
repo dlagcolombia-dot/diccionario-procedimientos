@@ -97,9 +97,19 @@ app.get('/api/verify', requireAuth, (req, res) => {
   res.json({ user: req.user });
 });
 
-// ── Multer: guardar PDFs en docs/pdfs ───────────────────────
+// ── Multer: guardar PDFs en docs/pdfs/{modulo} ───────────────────────
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, PDFS_DIR),
+  destination: (req, file, cb) => {
+    const modulo = req.params.modulo;
+    const moduloDir = path.join(PDFS_DIR, modulo);
+    
+    // Crear carpeta del módulo si no existe
+    if (!fs.existsSync(moduloDir)) {
+      fs.mkdirSync(moduloDir, { recursive: true });
+    }
+    
+    cb(null, moduloDir);
+  },
   filename: (req, file, cb) => {
     // Nombre limpio: espacios → guiones
     const clean = file.originalname
@@ -165,7 +175,7 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), (req, res) => {
     return res.status(400).json({ error: 'No se recibió ningún PDF' });
   }
 
-  const { titulo, descripcion } = req.body;
+  const { titulo, descripcion, area } = req.body;
 
   if (!titulo) {
     return res.status(400).json({ error: 'El título es obligatorio' });
@@ -175,7 +185,8 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), (req, res) => {
     id: Date.now(),
     titulo,
     descripcion: descripcion || '',
-    archivo: `pdfs/${req.file.filename}`,
+    area: area || 'General',
+    archivo: `pdfs/${modulo}/${req.file.filename}`,
     fecha: today()
   };
 
