@@ -25,7 +25,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 
 // ── Middlewares ─────────────────────────────────────────────
 app.use(cors({
-  origin: true,
+  origin: ['http://localhost:3000', 'https://procesosinnovacion.netlify.app'],
   credentials: true
 }));
 app.use(express.json());
