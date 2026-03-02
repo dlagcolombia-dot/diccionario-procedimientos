@@ -244,7 +244,13 @@
     btn.textContent = 'Subiendo...';
     btn.disabled = true;
 
-    fetch(API, { method: 'POST', body: form })
+    fetch(API, { 
+      method: 'POST', 
+      body: form,
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+      }
+    })
       .then(function(r) { return r.json(); })
       .then(function(res) {
         if (res.error) throw new Error(res.error);
