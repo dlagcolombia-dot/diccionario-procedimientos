@@ -1,11 +1,19 @@
 # 📋 Actas
 
+<div class="search-bar">
+  <input type="text" id="search-actas" placeholder="🔍 Buscar acta..." class="search-input" />
+  <select id="sort-actas" class="sort-select">
+    <option value="asc">📅 Más antiguo primero</option>
+    <option value="desc">📅 Más reciente primero</option>
+  </select>
+</div>
+
 <div class="upload-bar">
   <button class="btn-abrir-form" onclick="toggleForm()">➕ Agregar Acta</button>
 </div>
 
 <div id="upload-form" class="upload-form" style="display:none">
-  <h3> Subir nueva Acta</h3>
+  <h3>📤 Subir nueva Acta</h3>
   <div class="form-grid">
     <div class="form-group">
       <label>Título *</label>
@@ -22,7 +30,7 @@
   </div>
   <div class="form-actions">
     <button class="btn-cancelar" onclick="toggleForm()">Cancelar</button>
-    <button class="btn-subir" onclick="subirDoc('actas')"> Subir</button>
+    <button class="btn-subir" onclick="subirDoc('actas')">📤 Subir</button>
   </div>
   <div id="upload-msg" class="upload-msg"></div>
 </div>
@@ -43,6 +51,43 @@
 </div>
 
 <style>
+.search-bar {
+  margin: 16px 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+.search-input:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+.sort-select {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+.sort-select:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
 .upload-bar { margin: 16px 0; }
 .btn-abrir-form {
   background: #2c3e50;
@@ -183,6 +228,7 @@
 <script>
 (function() {
   var API = (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com') + '/api/actas';
+  var allDocs = [];
 
   function toggleForm() {
     var f = document.getElementById('upload-form');
@@ -198,29 +244,46 @@
     fetch(API)
       .then(function(r) { return r.json(); })
       .then(function(docs) {
-        if (!docs.length) {
-          grid.innerHTML = '<div class="empty-state"> No hay actas todavía. ¡Sube la primera!</div>';
-          return;
-        }
-        grid.innerHTML = docs.map(function(d) {
-          return '<div class="doc-card">' +
-            '<div class="doc-icon">📄</div>' +
-            '<div class="doc-info">' +
-              '<h3>' + d.titulo + '</h3>' +
-              (d.descripcion ? '<p>' + d.descripcion + '</p>' : '') +
-              '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
-            '</div>' +
-            '<div class="doc-actions">' +
-              '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
-              '<a class="btn-download" href="' + d.archivo + '" download> Descargar</a>' +
-              '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
-            '</div>' +
-          '</div>';
-        }).join('');
+        allDocs = docs;
+        renderDocs(docs);
       })
       .catch(function() {
-        grid.innerHTML = '<div class="empty-state"> No se pudo conectar al servidor.</div>';
+        grid.innerHTML = '<div class="empty-state">⚠️ No se pudo conectar al servidor.</div>';
       });
+  }
+
+  function renderDocs(docs) {
+    var grid = document.getElementById('actas-grid');
+    if (!grid) return;
+    
+    if (!docs.length) {
+      grid.innerHTML = '<div class="empty-state">📭 No hay actas todavía. ¡Sube la primera!</div>';
+      return;
+    }
+    
+    // Obtener orden seleccionado
+    var sortOrder = document.getElementById('sort-actas').value;
+    
+    // Ordenar según la selección
+    docs.sort(function(a, b) { 
+      return sortOrder === 'asc' ? a.id - b.id : b.id - a.id;
+    });
+    
+    grid.innerHTML = docs.map(function(d) {
+      return '<div class="doc-card">' +
+        '<div class="doc-icon">📄</div>' +
+        '<div class="doc-info">' +
+          '<h3>' + d.titulo + '</h3>' +
+          (d.descripcion ? '<p>' + d.descripcion + '</p>' : '') +
+          '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
+        '</div>' +
+        '<div class="doc-actions">' +
+          '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
+          '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
+          '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
   }
 
   window.subirDoc = function(modulo) {
@@ -231,7 +294,7 @@
 
     if (!titulo || !pdf) {
       msg.className = 'upload-msg err';
-      msg.textContent = ' El título y el PDF son obligatorios.';
+      msg.textContent = '⚠️ El título y el PDF son obligatorios.';
       return;
     }
 
@@ -255,7 +318,7 @@
       .then(function(res) {
         if (res.error) throw new Error(res.error);
         msg.className = 'upload-msg ok';
-        msg.textContent = ' Acta subida correctamente!';
+        msg.textContent = '✅ Acta subida correctamente!';
         document.getElementById('input-titulo').value = '';
         document.getElementById('input-desc').value = '';
         document.getElementById('input-pdf').value = '';
@@ -264,7 +327,7 @@
       })
       .catch(function(e) {
         msg.className = 'upload-msg err';
-        msg.textContent = ' Error: ' + e.message;
+        msg.textContent = '⚠️ Error: ' + e.message;
       })
       .finally(function() {
         btn.textContent = '📤 Subir';
@@ -285,11 +348,46 @@
       .catch(function() { alert('Error al eliminar el documento.'); });
   };
 
+  // Función de búsqueda
+  function buscarActas() {
+    var searchTerm = document.getElementById('search-actas').value.toLowerCase();
+    var filtered = allDocs.filter(function(doc) {
+      return doc.titulo.toLowerCase().includes(searchTerm) || 
+             (doc.descripcion && doc.descripcion.toLowerCase().includes(searchTerm));
+    });
+    renderDocs(filtered);
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('search-actas');
+    if (searchInput) {
+      searchInput.addEventListener('input', buscarActas);
+    }
+    var sortSelect = document.getElementById('sort-actas');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        renderDocs(allDocs);
+      });
+    }
+    cargarDocs();
+  });
+
   // Cargar al iniciar
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', cargarDocs);
   } else {
     cargarDocs();
+    var searchInput = document.getElementById('search-actas');
+    if (searchInput) {
+      searchInput.addEventListener('input', buscarActas);
+    }
+    var sortSelect = document.getElementById('sort-actas');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        renderDocs(allDocs);
+      });
+    }
   }
   setTimeout(cargarDocs, 300);
 })();

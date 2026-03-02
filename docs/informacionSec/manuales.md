@@ -2,6 +2,10 @@
 
 <div class="search-bar">
   <input type="text" id="search-manuales" placeholder="🔍 Buscar manual..." class="search-input" />
+  <select id="sort-manuales" class="sort-select">
+    <option value="asc">📅 Más antiguo primero</option>
+    <option value="desc">📅 Más reciente primero</option>
+  </select>
 </div>
 
 <div class="upload-bar">
@@ -49,10 +53,14 @@
 <style>
 .search-bar {
   margin: 16px 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 .search-input {
-  width: 100%;
-  max-width: 500px;
+  flex: 1;
+  min-width: 250px;
   padding: 12px 16px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
@@ -62,6 +70,21 @@
   transition: border-color 0.3s;
 }
 .search-input:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+.sort-select {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+.sort-select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
 }
@@ -238,8 +261,13 @@
       return;
     }
     
-    // Ordenar del más antiguo al más nuevo (por ID que es timestamp)
-    docs.sort(function(a, b) { return a.id - b.id; });
+    // Obtener orden seleccionado
+    var sortOrder = document.getElementById('sort-manuales').value;
+    
+    // Ordenar según la selección
+    docs.sort(function(a, b) { 
+      return sortOrder === 'asc' ? a.id - b.id : b.id - a.id;
+    });
     
     grid.innerHTML = docs.map(function(d) {
       return '<div class="doc-card">' +
@@ -336,6 +364,12 @@
     if (searchInput) {
       searchInput.addEventListener('input', buscarManuales);
     }
+    var sortSelect = document.getElementById('sort-manuales');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        renderDocs(allDocs);
+      });
+    }
     cargarDocs();
   });
 
@@ -347,6 +381,12 @@
     var searchInput = document.getElementById('search-manuales');
     if (searchInput) {
       searchInput.addEventListener('input', buscarManuales);
+    }
+    var sortSelect = document.getElementById('sort-manuales');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        renderDocs(allDocs);
+      });
     }
   }
   setTimeout(cargarDocs, 300);
