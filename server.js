@@ -24,23 +24,20 @@ const DATA_DIR = path.join(__dirname, 'data');
 });
 
 // ── Middlewares ─────────────────────────────────────────────
-app.use(cors({
-  origin: function(origin, callback) {
-    // Permitir peticiones sin origin (como Postman) y desde localhost y Netlify
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://procesosinnovacion.netlify.app'
-    ];
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Permitir todos por ahora para debugging
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// CORS configuración permisiva
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+app.use(cors());
 app.use(express.json());
 app.use(session({
   secret: JWT_SECRET,
