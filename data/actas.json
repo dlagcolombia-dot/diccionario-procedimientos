@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1772225660243,
+    "titulo": "BACK PYMES",
+    "descripcion": "",
+    "archivo": "pdfs/Acta-Back-Pymes.pdf",
+    "fecha": "27/02/2026"
+  },
+  {
+    "id": 1772225692005,
+    "titulo": "Acta Bienvenida Aprendices",
+    "descripcion": "",
+    "archivo": "pdfs/Acta-Bienvenida-Aprendices.pdf",
+    "fecha": "27/02/2026"
+  },
+  {
+    "id": 1772225709863,
+    "titulo": "Acta Inducción Movil",
+    "descripcion": "",
+    "archivo": "pdfs/Acta-Induccion-Movil.pdf",
+    "fecha": "27/02/2026"
+  },
+  {
+    "id": 1772225776543,
+    "titulo": "Acta Estructura Organizacional R3",
+    "descripcion": "",
+    "archivo": "pdfs/Acta-Estructura-Organizacional-R3.pdf",
+    "fecha": "27/02/2026"
+  }
+]

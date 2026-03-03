@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1772225976050,
+    "titulo": "Configuración de Microservicios y Servidores",
+    "descripcion": "",
+    "archivo": "pdfs/Configuracion-de-Microservicios-y-Servidores.pdf",
+    "fecha": "27/02/2026"
+  },
+  {
+    "id": 1772226002224,
+    "titulo": "Ecosistema y Automatización de reportes",
+    "descripcion": "",
+    "archivo": "pdfs/Ecosistema-y-Automatizacion-de-reportes.pdf",
+    "fecha": "27/02/2026"
+  },
+  {
+    "id": 1772226042925,
+    "titulo": "Cambiar Numero Celular envio Whatsap",
+    "descripcion": "",
+    "archivo": "pdfs/Cambiar-Numero-Celular-envio-Whatsap.pdf",
+    "fecha": "27/02/2026"
+  }
+]
