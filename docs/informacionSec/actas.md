@@ -280,7 +280,6 @@
         '<div class="doc-actions">' +
           '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
           '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
-          '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
         '</div>' +
       '</div>';
     }).join('');
