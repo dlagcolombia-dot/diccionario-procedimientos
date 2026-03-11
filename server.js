@@ -6,12 +6,20 @@ const fs      = require('fs');
 const jwt     = require('jsonwebtoken');
 const session = require('express-session');
 const { findUserByUsername, verifyPassword } = require('./users');
+const cloudinary = require('cloudinary').v2;
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
 // Clave secreta para JWT (cámbiala en producción)
 const JWT_SECRET = process.env.JWT_SECRET || 'tu-clave-secreta-super-segura-cambiala';
+
+// Configurar Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'deb471c7g',
+  api_key: process.env.CLOUDINARY_API_KEY || '779756674255571',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'Tzo9FmvfsQL0eENqRfn-g8q4Apc'
+});
 
 // ── Rutas base ──────────────────────────────────────────────
 const DOCS_DIR = path.join(__dirname, 'docs');
@@ -97,27 +105,8 @@ app.get('/api/verify', requireAuth, (req, res) => {
   res.json({ user: req.user });
 });
 
-// ── Multer: guardar PDFs en docs/pdfs/{modulo} ───────────────────────
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const modulo = req.params.modulo;
-    const moduloDir = path.join(PDFS_DIR, modulo);
-    
-    // Crear carpeta del módulo si no existe
-    if (!fs.existsSync(moduloDir)) {
-      fs.mkdirSync(moduloDir, { recursive: true });
-    }
-    
-    cb(null, moduloDir);
-  },
-  filename: (req, file, cb) => {
-    // Nombre limpio: espacios → guiones
-    const clean = file.originalname
-      .replace(/\s+/g, '-')
-      .replace(/[^a-zA-Z0-9.\-_]/g, '');
-    cb(null, clean);
-  }
-});
+// ── Multer: usar memoria para subir a Cloudinary ───────────────────────
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
@@ -163,8 +152,8 @@ app.get('/api/:modulo', (req, res) => {
   res.json(readData(modulo));
 });
 
-// ── POST /api/:modulo → subir documento ─────────────────────
-app.post('/api/:modulo', requireAuth, upload.single('pdf'), (req, res) => {
+// ── POST /api/:modulo → subir documento a Cloudinary ─────────────────────
+app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => {
   const { modulo } = req.params;
 
   if (!MODULOS_VALIDOS.includes(modulo)) {
@@ -181,25 +170,50 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), (req, res) => {
     return res.status(400).json({ error: 'El título es obligatorio' });
   }
 
-  const nuevoDoc = {
-    id: Date.now(),
-    titulo,
-    descripcion: descripcion || '',
-    area: area || 'General',
-    archivo: `pdfs/${modulo}/${req.file.filename}`,
-    fecha: today()
-  };
+  try {
+    // Subir a Cloudinary usando buffer
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: `diccionario/${modulo}`,
+        resource_type: 'raw',
+        public_id: req.file.originalname.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9.\-_]/g, '').replace('.pdf', ''),
+        format: 'pdf'
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Error subiendo a Cloudinary:', error);
+          return res.status(500).json({ error: 'Error al subir el archivo' });
+        }
 
-  const data = readData(modulo);
-  data.push(nuevoDoc);
-  writeData(modulo, data);
+        const nuevoDoc = {
+          id: Date.now(),
+          titulo,
+          descripcion: descripcion || '',
+          area: area || 'General',
+          archivo: result.secure_url,
+          cloudinary_id: result.public_id,
+          fecha: today()
+        };
 
-  console.log(`[${modulo.toUpperCase()}] Nuevo documento: ${titulo}`);
-  res.status(201).json({ mensaje: 'Documento subido correctamente', doc: nuevoDoc });
+        const data = readData(modulo);
+        data.push(nuevoDoc);
+        writeData(modulo, data);
+
+        console.log(`[${modulo.toUpperCase()}] Nuevo documento: ${titulo}`);
+        res.status(201).json({ mensaje: 'Documento subido correctamente', doc: nuevoDoc });
+      }
+    );
+
+    // Escribir el buffer al stream
+    uploadStream.end(req.file.buffer);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Error al procesar el archivo' });
+  }
 });
 
-// ── DELETE /api/:modulo/:id → eliminar documento ─────────────
-app.delete('/api/:modulo/:id', requireAuth, (req, res) => {
+// ── DELETE /api/:modulo/:id → eliminar documento de Cloudinary ─────────────
+app.delete('/api/:modulo/:id', requireAuth, async (req, res) => {
   const { modulo, id } = req.params;
 
   if (!MODULOS_VALIDOS.includes(modulo)) {
@@ -213,14 +227,24 @@ app.delete('/api/:modulo/:id', requireAuth, (req, res) => {
     return res.status(404).json({ error: 'Documento no encontrado' });
   }
 
-  // Eliminar archivo PDF
-  const pdfPath = path.join(DOCS_DIR, doc.archivo);
-  if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
+  try {
+    // Eliminar de Cloudinary si tiene cloudinary_id
+    if (doc.cloudinary_id) {
+      await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'raw' });
+      console.log(`[${modulo.toUpperCase()}] Eliminado de Cloudinary: ${doc.cloudinary_id}`);
+    }
 
-  data = data.filter(d => d.id !== Number(id));
-  writeData(modulo, data);
+    data = data.filter(d => d.id !== Number(id));
+    writeData(modulo, data);
 
-  res.json({ mensaje: 'Documento eliminado correctamente' });
+    res.json({ mensaje: 'Documento eliminado correctamente' });
+  } catch (error) {
+    console.error('Error eliminando de Cloudinary:', error);
+    // Eliminar de la base de datos aunque falle Cloudinary
+    data = data.filter(d => d.id !== Number(id));
+    writeData(modulo, data);
+    res.json({ mensaje: 'Documento eliminado de la base de datos' });
+  }
 });
 
 // ── Iniciar servidor ─────────────────────────────────────────

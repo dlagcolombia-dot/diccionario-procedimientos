@@ -1,19 +1,27 @@
 # 📄 Procedimientos
 
+<div class="search-bar">
+  <input type="text" id="search-procedimientos" placeholder="🔍 Buscar procedimiento..." class="search-input" />
+  <select id="sort-procedimientos" class="sort-select">
+    <option value="asc">📅 Más antiguo primero</option>
+    <option value="desc">📅 Más reciente primero</option>
+  </select>
+</div>
+
 <div class="upload-bar">
   <button class="btn-abrir-form" onclick="toggleFormProc()">➕ Agregar Procedimiento</button>
 </div>
 
 <div id="upload-form-proc" class="upload-form-proc" style="display:none">
-  <h3>📤 Subir nueva Procedimiento</h3>
+  <h3>📤 Subir nuevo Procedimiento</h3>
   <div class="form-grid">
     <div class="form-group">
       <label>Título *</label>
-      <input type="text" id="input-titulo-p" placeholder="Ej: Procedimiento Reunión Febrero 2026" />
+      <input type="text" id="input-titulo-p" placeholder="Ej: Procedimiento Febrero 2026" />
     </div>
     <div class="form-group">
       <label>Descripción</label>
-      <input type="text" id="input-desc-p" placeholder="Breve descripción del acta" />
+      <input type="text" id="input-desc-p" placeholder="Breve descripción del procedimiento" />
     </div>
     <div class="form-group">
       <label>Archivo PDF *</label>
@@ -43,6 +51,43 @@
 </div>
 
 <style>
+.search-bar {
+  margin: 16px 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+.search-input:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+.sort-select {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+.sort-select:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
 .upload-bar { margin: 16px 0; }
 .btn-abrir-form {
   background: #2c3e50;
@@ -183,6 +228,7 @@
 <script>
 (function() {
   var API = (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com') + '/api/procedimientos';
+  var allDocs = [];
 
   function toggleFormProc() {
     var f = document.getElementById('upload-form-proc');
@@ -198,29 +244,46 @@
     fetch(API)
       .then(function(r) { return r.json(); })
       .then(function(docs) {
-        if (!docs.length) {
-          grid.innerHTML = '<div class="empty-state">📭 No hay procedimientos todavía. ¡Sube la primera!</div>';
-          return;
-        }
-        grid.innerHTML = docs.map(function(d) {
-          return '<div class="doc-card">' +
-            '<div class="doc-icon">📄</div>' +
-            '<div class="doc-info">' +
-              '<h3>' + d.titulo + '</h3>' +
-              (d.descripcion ? '<p>' + d.descripcion + '</p>' : '') +
-              '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
-            '</div>' +
-            '<div class="doc-actions">' +
-              '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
-              '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
-              '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
-            '</div>' +
-          '</div>';
-        }).join('');
+        allDocs = docs;
+        renderDocs(docs);
       })
       .catch(function() {
         grid.innerHTML = '<div class="empty-state">⚠️ No se pudo conectar al servidor.</div>';
       });
+  }
+
+  function renderDocs(docs) {
+    var grid = document.getElementById('procedimientos-grid');
+    if (!grid) return;
+    
+    if (!docs.length) {
+      grid.innerHTML = '<div class="empty-state">📭 No hay procedimientos todavía. ¡Sube el primero!</div>';
+      return;
+    }
+    
+    // Obtener orden seleccionado
+    var sortOrder = document.getElementById('sort-procedimientos').value;
+    
+    // Ordenar según la selección
+    docs.sort(function(a, b) { 
+      return sortOrder === 'asc' ? a.id - b.id : b.id - a.id;
+    });
+    
+    grid.innerHTML = docs.map(function(d) {
+      return '<div class="doc-card">' +
+        '<div class="doc-icon">📄</div>' +
+        '<div class="doc-info">' +
+          '<h3>' + d.titulo + '</h3>' +
+          (d.descripcion ? '<p>' + d.descripcion + '</p>' : '') +
+          '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
+        '</div>' +
+        '<div class="doc-actions">' +
+          '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
+          '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
+          '<button class="btn-eliminar" onclick="eliminarDoc(' + d.id + ')">🗑️</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
   }
 
   window.subirDoc = function(modulo) {
@@ -255,7 +318,7 @@
       .then(function(res) {
         if (res.error) throw new Error(res.error);
         msg.className = 'upload-msg-proc ok';
-        msg.textContent = '✅ Procedimiento subida correctamente!';
+        msg.textContent = '✅ Procedimiento subido correctamente!';
         document.getElementById('input-titulo-p').value = '';
         document.getElementById('input-desc-p').value = '';
         document.getElementById('input-pdf-p').value = '';
@@ -264,7 +327,7 @@
       })
       .catch(function(e) {
         msg.className = 'upload-msg-proc err';
-        msg.textContent = '❌ Error: ' + e.message;
+        msg.textContent = '⚠️ Error: ' + e.message;
       })
       .finally(function() {
         btn.textContent = '📤 Subir';
@@ -274,17 +337,57 @@
 
   window.eliminarDoc = function(id) {
     if (!confirm('¿Seguro que quieres eliminar este documento?')) return;
-    fetch(API + '/' + id, { method: 'DELETE' })
+    fetch(API + '/' + id, { 
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+      }
+    })
       .then(function(r) { return r.json(); })
       .then(function() { cargarDocs(); })
       .catch(function() { alert('Error al eliminar el documento.'); });
   };
+
+  // Función de búsqueda
+  function buscarProcedimientos() {
+    var searchTerm = document.getElementById('search-procedimientos').value.toLowerCase();
+    var filtered = allDocs.filter(function(doc) {
+      return doc.titulo.toLowerCase().includes(searchTerm) || 
+             (doc.descripcion && doc.descripcion.toLowerCase().includes(searchTerm));
+    });
+    renderDocs(filtered);
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('search-procedimientos');
+    if (searchInput) {
+      searchInput.addEventListener('input', buscarProcedimientos);
+    }
+    var sortSelect = document.getElementById('sort-procedimientos');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        renderDocs(allDocs);
+      });
+    }
+    cargarDocs();
+  });
 
   // Cargar al iniciar
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', cargarDocs);
   } else {
     cargarDocs();
+    var searchInput = document.getElementById('search-procedimientos');
+    if (searchInput) {
+      searchInput.addEventListener('input', buscarProcedimientos);
+    }
+    var sortSelect = document.getElementById('sort-procedimientos');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        renderDocs(allDocs);
+      });
+    }
   }
   setTimeout(cargarDocs, 300);
 })();
