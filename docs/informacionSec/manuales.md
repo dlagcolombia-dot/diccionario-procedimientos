@@ -397,9 +397,8 @@
     
     if (modal && iframe && modalTitle) {
       modalTitle.textContent = titulo;
-      // Usar proxy del servidor para cargar PDFs con headers correctos
-      var API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com';
-      iframe.src = API_BASE + '/api/pdf-proxy?url=' + encodeURIComponent(url);
+      // Usar visor de PDF de Mozilla (más confiable)
+      iframe.src = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(url);
       modal.classList.add('active');
     }
   };
