@@ -187,6 +187,13 @@
   font-weight: 600; text-align: center; transition: background 0.2s;
 }
 .btn-download:hover { background: #e5e7eb; }
+.btn-download-full {
+  width: 100%; padding: 10px 16px; background: #2c3e50; color: white;
+  border-radius: 8px; text-decoration: none !important; font-size: 14px;
+  font-weight: 600; text-align: center; transition: opacity 0.2s;
+  display: block;
+}
+.btn-download-full:hover { opacity: 0.85; }
 .btn-eliminar {
   padding: 8px 12px; background: #fee2e2; color: #dc2626;
   border: none; border-radius: 7px; cursor: pointer; font-size: 13px;
@@ -253,8 +260,7 @@
           '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
         '</div>' +
         '<div class="doc-actions">' +
-          '<a class="btn-preview" href="' + d.archivo + '" target="_blank">👁️ Ver PDF</a>' +
-          '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
+          '<a class="btn-download-full" href="' + d.archivo + '" download>📥 Descargar PDF</a>' +
         '</div>' +
       '</div>';
     }).join('');
