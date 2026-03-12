@@ -188,7 +188,8 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
         folder: `diccionario/${modulo}`,
         resource_type: 'raw',
         public_id: req.file.originalname.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9.\-_]/g, '').replace('.pdf', ''),
-        format: 'pdf'
+        format: 'pdf',
+        flags: 'attachment'
       },
       (error, result) => {
         if (error) {

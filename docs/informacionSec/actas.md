@@ -389,6 +389,36 @@
     cargarDocs();
   });
 
+  // Funciones del modal
+  window.openPreview = function(url, titulo) {
+    var modal = document.getElementById('pdf-modal');
+    var iframe = document.getElementById('modal-iframe');
+    var modalTitle = document.getElementById('modal-title');
+    
+    if (modal && iframe && modalTitle) {
+      modalTitle.textContent = titulo;
+      // Cargar PDF directamente con parámetro para forzar visualización
+      iframe.src = url + '#toolbar=0&navpanes=0&scrollbar=0';
+      modal.classList.add('active');
+    }
+  };
+
+  window.closeModal = function() {
+    var modal = document.getElementById('pdf-modal');
+    var iframe = document.getElementById('modal-iframe');
+    
+    if (modal && iframe) {
+      modal.classList.remove('active');
+      iframe.src = '';
+    }
+  };
+
+  window.closePreview = function(event) {
+    if (event.target.id === 'pdf-modal') {
+      closeModal();
+    }
+  };
+
   // Cargar al iniciar
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', cargarDocs);
