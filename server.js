@@ -7,6 +7,7 @@ const jwt     = require('jsonwebtoken');
 const session = require('express-session');
 const { findUserByUsername, verifyPassword } = require('./users');
 const cloudinary = require('cloudinary').v2;
+const { connectDB, getDB } = require('./db');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -117,19 +118,23 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 } // 20MB máx
 });
 
-// ── Helpers JSON ─────────────────────────────────────────────
-function getDataFile(modulo) {
-  return path.join(DATA_DIR, `${modulo}.json`);
+// ── Helpers MongoDB ─────────────────────────────────────────────
+async function readData(modulo) {
+  const db = getDB();
+  const collection = db.collection(modulo);
+  return await collection.find({}).toArray();
 }
 
-function readData(modulo) {
-  const file = getDataFile(modulo);
-  if (!fs.existsSync(file)) return [];
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
+async function writeData(modulo, doc) {
+  const db = getDB();
+  const collection = db.collection(modulo);
+  await collection.insertOne(doc);
 }
 
-function writeData(modulo, data) {
-  fs.writeFileSync(getDataFile(modulo), JSON.stringify(data, null, 2));
+async function deleteData(modulo, id) {
+  const db = getDB();
+  const collection = db.collection(modulo);
+  await collection.deleteOne({ id: Number(id) });
 }
 
 function today() {
@@ -144,12 +149,18 @@ function today() {
 const MODULOS_VALIDOS = ['actas', 'manuales', 'procedimientos'];
 
 // ── GET /api/:modulo → listar documentos ────────────────────
-app.get('/api/:modulo', (req, res) => {
+app.get('/api/:modulo', async (req, res) => {
   const { modulo } = req.params;
   if (!MODULOS_VALIDOS.includes(modulo)) {
     return res.status(400).json({ error: 'Módulo no válido' });
   }
-  res.json(readData(modulo));
+  try {
+    const docs = await readData(modulo);
+    res.json(docs);
+  } catch (error) {
+    console.error('Error leyendo datos:', error);
+    res.status(500).json({ error: 'Error al obtener documentos' });
+  }
 });
 
 // ── POST /api/:modulo → subir documento a Cloudinary ─────────────────────
@@ -195,12 +206,13 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
           fecha: today()
         };
 
-        const data = readData(modulo);
-        data.push(nuevoDoc);
-        writeData(modulo, data);
-
-        console.log(`[${modulo.toUpperCase()}] Nuevo documento: ${titulo}`);
-        res.status(201).json({ mensaje: 'Documento subido correctamente', doc: nuevoDoc });
+        writeData(modulo, nuevoDoc).then(() => {
+          console.log(`[${modulo.toUpperCase()}] Nuevo documento: ${titulo}`);
+          res.status(201).json({ mensaje: 'Documento subido correctamente', doc: nuevoDoc });
+        }).catch(err => {
+          console.error('Error guardando en MongoDB:', err);
+          res.status(500).json({ error: 'Error al guardar el documento' });
+        });
       }
     );
 
@@ -220,35 +232,40 @@ app.delete('/api/:modulo/:id', requireAuth, async (req, res) => {
     return res.status(400).json({ error: 'Módulo no válido' });
   }
 
-  let data = readData(modulo);
-  const doc = data.find(d => d.id === Number(id));
-
-  if (!doc) {
-    return res.status(404).json({ error: 'Documento no encontrado' });
-  }
-
   try {
+    const docs = await readData(modulo);
+    const doc = docs.find(d => d.id === Number(id));
+
+    if (!doc) {
+      return res.status(404).json({ error: 'Documento no encontrado' });
+    }
+
     // Eliminar de Cloudinary si tiene cloudinary_id
     if (doc.cloudinary_id) {
       await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'raw' });
       console.log(`[${modulo.toUpperCase()}] Eliminado de Cloudinary: ${doc.cloudinary_id}`);
     }
 
-    data = data.filter(d => d.id !== Number(id));
-    writeData(modulo, data);
-
+    await deleteData(modulo, id);
     res.json({ mensaje: 'Documento eliminado correctamente' });
   } catch (error) {
-    console.error('Error eliminando de Cloudinary:', error);
-    // Eliminar de la base de datos aunque falle Cloudinary
-    data = data.filter(d => d.id !== Number(id));
-    writeData(modulo, data);
-    res.json({ mensaje: 'Documento eliminado de la base de datos' });
+    console.error('Error eliminando documento:', error);
+    res.status(500).json({ error: 'Error al eliminar el documento' });
   }
 });
 
 // ── Iniciar servidor ─────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📁 Sirviendo Docsify desde: ${DOCS_DIR}`);
-});
+async function startServer() {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`📁 Sirviendo Docsify desde: ${DOCS_DIR}`);
+    });
+  } catch (error) {
+    console.error('❌ Error iniciando servidor:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
