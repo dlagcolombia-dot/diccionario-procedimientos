@@ -195,13 +195,15 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
   }
 
   try {
-    // Subir a Cloudinary usando buffer como auto (detecta automáticamente el tipo)
+    // Subir a Cloudinary como imagen para permitir acceso público
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: `diccionario/${modulo}`,
-        resource_type: 'auto',
+        resource_type: 'image',
         public_id: req.file.originalname.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9.\-_]/g, '').replace('.pdf', ''),
-        access_mode: 'public'
+        format: 'pdf',
+        access_mode: 'public',
+        type: 'upload'
       },
       (error, result) => {
         if (error) {
@@ -209,13 +211,21 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
           return res.status(500).json({ error: 'Error al subir el archivo' });
         }
 
+        // Generar URL firmada para acceso público
+        const signedUrl = cloudinary.url(result.public_id, {
+          resource_type: 'image',
+          type: 'upload',
+          sign_url: true,
+          secure: true
+        });
+
         // Usar la URL segura directamente
         const nuevoDoc = {
           id: Date.now(),
           titulo,
           descripcion: descripcion || '',
           area: area || 'General',
-          archivo: result.secure_url,
+          archivo: signedUrl || result.secure_url,
           cloudinary_id: result.public_id,
           fecha: today()
         };
