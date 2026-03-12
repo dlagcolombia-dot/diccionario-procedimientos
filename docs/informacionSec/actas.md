@@ -37,19 +37,6 @@
 
 <div id="actas-grid" class="cards-grid"></div>
 
-<div id="pdf-modal" class="modal-overlay" onclick="closePreview(event)">
-  <div class="modal-box">
-    <div class="modal-header">
-      <button class="btn-volver" onclick="closeModal()">← Volver</button>
-      <span id="modal-title">Vista Previa</span>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <iframe id="modal-iframe" src="" frameborder="0"></iframe>
-    </div>
-  </div>
-</div>
-
 <style>
 .search-bar {
   margin: 16px 0;
@@ -207,38 +194,9 @@
 }
 .btn-eliminar:hover { background: #fecaca; }
 .empty-state { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; }
-.modal-overlay {
-  display: none; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%; background: rgba(0,0,0,0.6);
-  z-index: 9999; align-items: center; justify-content: center;
-}
-.modal-overlay.active { display: flex; }
-.modal-box {
-  background: #fff; border-radius: 12px; width: 90%; max-width: 900px;
-  height: 85vh; display: flex; flex-direction: column; overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid #e5e7eb; gap: 12px;
-}
-.btn-volver {
-  background: #f3f4f6; border: none; border-radius: 7px; padding: 7px 14px;
-  cursor: pointer; font-size: 13px; font-weight: 600; color: #374151; white-space: nowrap;
-}
-.btn-volver:hover { background: #e5e7eb; }
-#modal-title { flex: 1; font-weight: 700; font-size: 14px; color: #1f2937; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.modal-close {
-  background: #fee2e2; border: none; border-radius: 6px; width: 32px; height: 32px;
-  cursor: pointer; font-size: 14px; color: #dc2626; font-weight: 700;
-}
-.modal-close:hover { background: #fecaca; }
-.modal-body { flex: 1; overflow: hidden; }
-.modal-body iframe { width: 100%; height: 100%; }
 @media (max-width: 768px) {
   .form-grid { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: 1fr; }
-  .modal-box { width: 100%; height: 100%; border-radius: 0; }
 }
 </style>
 
@@ -295,7 +253,7 @@
           '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
         '</div>' +
         '<div class="doc-actions">' +
-          '<button class="btn-preview" onclick="openPreview(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">👁️ Vista Previa</button>' +
+          '<button class="btn-preview" onclick="window.open(\'' + d.archivo + '\', \'_blank\')">👁️ Vista Previa</button>' +
           '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
         '</div>' +
       '</div>';
@@ -388,35 +346,6 @@
     }
     cargarDocs();
   });
-
-  // Funciones del modal
-  window.openPreview = function(url, titulo) {
-    var modal = document.getElementById('pdf-modal');
-    var iframe = document.getElementById('modal-iframe');
-    var modalTitle = document.getElementById('modal-title');
-    
-    if (modal && iframe && modalTitle) {
-      modalTitle.textContent = titulo;
-      iframe.src = url;
-      modal.classList.add('active');
-    }
-  };
-
-  window.closeModal = function() {
-    var modal = document.getElementById('pdf-modal');
-    var iframe = document.getElementById('modal-iframe');
-    
-    if (modal && iframe) {
-      modal.classList.remove('active');
-      iframe.src = '';
-    }
-  };
-
-  window.closePreview = function(event) {
-    if (event.target.id === 'pdf-modal') {
-      closeModal();
-    }
-  };
 
   // Cargar al iniciar
   if (document.readyState === 'loading') {
