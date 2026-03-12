@@ -106,6 +106,29 @@ app.get('/api/verify', requireAuth, (req, res) => {
   res.json({ user: req.user });
 });
 
+// ── Ruta proxy para servir PDFs con headers correctos ──────
+app.get('/api/pdf-proxy', async (req, res) => {
+  const { url } = req.query;
+  
+  if (!url) {
+    return res.status(400).json({ error: 'URL requerida' });
+  }
+  
+  try {
+    const fetch = (await import('node-fetch')).default;
+    const response = await fetch(url);
+    const buffer = await response.buffer();
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.send(buffer);
+  } catch (error) {
+    console.error('Error en proxy PDF:', error);
+    res.status(500).json({ error: 'Error al cargar el PDF' });
+  }
+});
+
 // ── Multer: usar memoria para subir a Cloudinary ───────────────────────
 const storage = multer.memoryStorage();
 
@@ -188,8 +211,7 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
         folder: `diccionario/${modulo}`,
         resource_type: 'raw',
         public_id: req.file.originalname.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9.\-_]/g, '').replace('.pdf', ''),
-        format: 'pdf',
-        flags: 'attachment'
+        format: 'pdf'
       },
       (error, result) => {
         if (error) {
@@ -197,12 +219,19 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
           return res.status(500).json({ error: 'Error al subir el archivo' });
         }
 
+        // Generar URL con transformación para visualización inline
+        const viewUrl = cloudinary.url(result.public_id, {
+          resource_type: 'raw',
+          flags: 'attachment:false',
+          secure: true
+        });
+
         const nuevoDoc = {
           id: Date.now(),
           titulo,
           descripcion: descripcion || '',
           area: area || 'General',
-          archivo: result.secure_url,
+          archivo: viewUrl || result.secure_url,
           cloudinary_id: result.public_id,
           fecha: today()
         };

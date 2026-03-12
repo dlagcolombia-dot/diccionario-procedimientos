@@ -397,8 +397,9 @@
     
     if (modal && iframe && modalTitle) {
       modalTitle.textContent = titulo;
-      // Cargar PDF directamente con parámetro para forzar visualización
-      iframe.src = url + '#toolbar=0&navpanes=0&scrollbar=0';
+      // Usar proxy del servidor para cargar PDFs con headers correctos
+      var API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com';
+      iframe.src = API_BASE + '/api/pdf-proxy?url=' + encodeURIComponent(url);
       modal.classList.add('active');
     }
   };

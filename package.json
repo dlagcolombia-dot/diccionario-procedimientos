@@ -28,7 +28,8 @@
     "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "docsify-cli": "^4.4.4",
