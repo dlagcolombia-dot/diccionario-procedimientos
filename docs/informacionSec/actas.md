@@ -188,12 +188,12 @@
 }
 .btn-download:hover { background: #e5e7eb; }
 .btn-download-full {
-  width: 100%; padding: 10px 16px; background: #2c3e50; color: white;
+  width: 100%; padding: 10px 16px; background: #dc2626; color: white;
   border-radius: 8px; text-decoration: none !important; font-size: 14px;
-  font-weight: 600; text-align: center; transition: opacity 0.2s;
+  font-weight: 600; text-align: center; transition: background 0.2s;
   display: block;
 }
-.btn-download-full:hover { opacity: 0.85; }
+.btn-download-full:hover { background: #b91c1c; }
 .btn-eliminar {
   padding: 8px 12px; background: #fee2e2; color: #dc2626;
   border: none; border-radius: 7px; cursor: pointer; font-size: 13px;
