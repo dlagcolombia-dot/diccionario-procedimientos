@@ -5,6 +5,7 @@ const path    = require('path');
 const fs      = require('fs');
 const jwt     = require('jsonwebtoken');
 const session = require('express-session');
+const https   = require('https');
 const { findUserByUsername, verifyPassword } = require('./users');
 const cloudinary = require('cloudinary').v2;
 const { connectDB, getDB } = require('./db');
@@ -107,7 +108,7 @@ app.get('/api/verify', requireAuth, (req, res) => {
 });
 
 // ── Ruta proxy para servir PDFs con headers correctos ──────
-app.get('/api/pdf-proxy', async (req, res) => {
+app.get('/api/pdf-proxy', (req, res) => {
   const { url } = req.query;
   
   if (!url) {
@@ -115,14 +116,15 @@ app.get('/api/pdf-proxy', async (req, res) => {
   }
   
   try {
-    const fetch = (await import('node-fetch')).default;
-    const response = await fetch(url);
-    const buffer = await response.buffer();
-    
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.send(buffer);
+    https.get(url, (response) => {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline');
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+      response.pipe(res);
+    }).on('error', (error) => {
+      console.error('Error en proxy PDF:', error);
+      res.status(500).json({ error: 'Error al cargar el PDF' });
+    });
   } catch (error) {
     console.error('Error en proxy PDF:', error);
     res.status(500).json({ error: 'Error al cargar el PDF' });
