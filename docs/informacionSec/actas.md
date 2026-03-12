@@ -397,8 +397,8 @@
     
     if (modal && iframe && modalTitle) {
       modalTitle.textContent = titulo;
-      // Usar visor de PDF de Mozilla (más confiable)
-      iframe.src = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(url);
+      // Cargar PDF directamente desde Cloudinary
+      iframe.src = url;
       modal.classList.add('active');
     }
   };

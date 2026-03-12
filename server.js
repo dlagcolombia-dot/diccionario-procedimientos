@@ -221,19 +221,13 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
           return res.status(500).json({ error: 'Error al subir el archivo' });
         }
 
-        // Generar URL con transformación para visualización inline
-        const viewUrl = cloudinary.url(result.public_id, {
-          resource_type: 'raw',
-          flags: 'attachment:false',
-          secure: true
-        });
-
+        // Usar la URL segura directamente
         const nuevoDoc = {
           id: Date.now(),
           titulo,
           descripcion: descripcion || '',
           area: area || 'General',
-          archivo: viewUrl || result.secure_url,
+          archivo: result.secure_url,
           cloudinary_id: result.public_id,
           fecha: today()
         };
