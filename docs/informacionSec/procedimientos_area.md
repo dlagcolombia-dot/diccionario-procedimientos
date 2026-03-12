@@ -397,9 +397,7 @@
     
     if (modal && iframe && modalTitle) {
       modalTitle.textContent = titulo;
-      // Modificar URL de Cloudinary para forzar visualización inline
-      var viewUrl = url.replace('/upload/', '/upload/fl_attachment:false/');
-      iframe.src = viewUrl;
+      iframe.src = url;
       modal.classList.add('active');
     }
   };

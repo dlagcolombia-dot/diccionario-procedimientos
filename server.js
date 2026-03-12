@@ -195,14 +195,13 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
   }
 
   try {
-    // Subir a Cloudinary usando buffer como imagen (permite mejor visualización)
+    // Subir a Cloudinary usando buffer como auto (detecta automáticamente el tipo)
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: `diccionario/${modulo}`,
-        resource_type: 'image',
+        resource_type: 'auto',
         public_id: req.file.originalname.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9.\-_]/g, '').replace('.pdf', ''),
-        format: 'pdf',
-        type: 'upload'
+        access_mode: 'public'
       },
       (error, result) => {
         if (error) {
@@ -257,7 +256,16 @@ app.delete('/api/:modulo/:id', requireAuth, async (req, res) => {
 
     // Eliminar de Cloudinary si tiene cloudinary_id
     if (doc.cloudinary_id) {
-      await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'image' });
+      // Intentar eliminar con diferentes resource types
+      try {
+        await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'raw', invalidate: true });
+      } catch (e) {
+        try {
+          await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'image', invalidate: true });
+        } catch (e2) {
+          console.log('No se pudo eliminar de Cloudinary, puede que ya no exista');
+        }
+      }
       console.log(`[${modulo.toUpperCase()}] Eliminado de Cloudinary: ${doc.cloudinary_id}`);
     }
 
