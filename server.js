@@ -115,20 +115,8 @@ app.get('/api/pdf-proxy', (req, res) => {
     return res.status(400).json({ error: 'URL requerida' });
   }
   
-  try {
-    https.get(url, (response) => {
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline');
-      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-      response.pipe(res);
-    }).on('error', (error) => {
-      console.error('Error en proxy PDF:', error);
-      res.status(500).json({ error: 'Error al cargar el PDF' });
-    });
-  } catch (error) {
-    console.error('Error en proxy PDF:', error);
-    res.status(500).json({ error: 'Error al cargar el PDF' });
-  }
+  // Redirigir con headers para forzar visualización inline
+  res.redirect(url.replace('/upload/', '/upload/fl_attachment:false/'));
 });
 
 // ── Multer: usar memoria para subir a Cloudinary ───────────────────────

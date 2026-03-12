@@ -397,8 +397,9 @@
     
     if (modal && iframe && modalTitle) {
       modalTitle.textContent = titulo;
-      // Cargar PDF directamente desde Cloudinary
-      iframe.src = url;
+      // Modificar URL de Cloudinary para forzar visualización inline
+      var viewUrl = url.replace('/upload/', '/upload/fl_attachment:false/');
+      iframe.src = viewUrl;
       modal.classList.add('active');
     }
   };
