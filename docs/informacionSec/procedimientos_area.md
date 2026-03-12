@@ -253,7 +253,7 @@
           '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
         '</div>' +
         '<div class="doc-actions">' +
-          '<button class="btn-preview" onclick="window.open(\'' + d.archivo + '\', \'_blank\')">👁️ Vista Previa</button>' +
+          '<button class="btn-preview" onclick="window.open(\'' + d.archivo.replace('/raw/upload/', '/image/upload/fl_attachment/') + '\', \'_blank\')">👁️ Vista Previa</button>' +
           '<a class="btn-download" href="' + d.archivo + '" download>📥 Descargar</a>' +
         '</div>' +
       '</div>';
