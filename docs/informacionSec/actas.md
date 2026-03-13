@@ -1,211 +1,66 @@
-# 📋 Actas
+# <i class="bi bi-file-earmark-text"></i> Actas
 
-<div class="search-bar">
-  <input type="text" id="search-actas" placeholder="🔍 Buscar acta..." class="search-input" />
-  <select id="sort-actas" class="sort-select">
-    <option value="asc">📅 Más antiguo primero</option>
-    <option value="desc">📅 Más reciente primero</option>
-  </select>
-</div>
-
-<div class="upload-bar">
-  <button class="btn-abrir-form" onclick="toggleForm()">➕ Agregar Acta</button>
-</div>
-
-<div id="upload-form" class="upload-form" style="display:none">
-  <h3>📤 Subir nueva Acta</h3>
-  <div class="form-grid">
-    <div class="form-group">
-      <label>Título *</label>
-      <input type="text" id="input-titulo" placeholder="Ej: Acta Reunión Febrero 2026" />
+<div class="container-fluid px-0">
+  <!-- Barra de búsqueda y filtros -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-8">
+      <div class="input-group">
+        <span class="input-group-text bg-white">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" id="search-actas" class="form-control" placeholder="Buscar acta por título o descripción..." />
+      </div>
     </div>
-    <div class="form-group">
-      <label>Descripción</label>
-      <input type="text" id="input-desc" placeholder="Breve descripción del acta" />
-    </div>
-    <div class="form-group">
-      <label>Archivo PDF *</label>
-      <input type="file" id="input-pdf" accept=".pdf" />
+    <div class="col-md-4">
+      <select id="sort-actas" class="form-select">
+        <option value="desc"><i class="bi bi-calendar"></i> Más reciente primero</option>
+        <option value="asc"><i class="bi bi-calendar"></i> Más antiguo primero</option>
+      </select>
     </div>
   </div>
-  <div class="form-actions">
-    <button class="btn-cancelar" onclick="toggleForm()">Cancelar</button>
-    <button class="btn-subir" onclick="subirDoc('actas')">📤 Subir</button>
+
+  <!-- Botón agregar -->
+  <div class="mb-4">
+    <button class="btn btn-primary" onclick="toggleForm()">
+      <i class="bi bi-plus-circle"></i> Agregar Acta
+    </button>
   </div>
-  <div id="upload-msg" class="upload-msg"></div>
+
+  <!-- Formulario de subida -->
+  <div id="upload-form" class="card mb-4" style="display:none">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0"><i class="bi bi-cloud-upload"></i> Subir nueva Acta</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Título *</label>
+          <input type="text" id="input-titulo" class="form-control" placeholder="Ej: Acta Reunión Febrero 2026" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Descripción</label>
+          <input type="text" id="input-desc" class="form-control" placeholder="Breve descripción del acta" />
+        </div>
+        <div class="col-12">
+          <label class="form-label">Archivo PDF *</label>
+          <input type="file" id="input-pdf" class="form-control" accept=".pdf" />
+        </div>
+      </div>
+      <div class="mt-3">
+        <div id="upload-msg" class="alert" style="display:none"></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
+      <button class="btn btn-primary ms-2" onclick="subirDoc('actas')">
+        <i class="bi bi-cloud-upload"></i> Subir
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid de documentos -->
+  <div id="actas-grid" class="row g-3"></div>
 </div>
-
-<div id="actas-grid" class="cards-grid"></div>
-
-<style>
-.search-bar {
-  margin: 16px 0;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.search-input {
-  flex: 1;
-  min-width: 200px;
-  max-width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 15px;
-  outline: none;
-  font-family: inherit;
-  transition: border-color 0.3s;
-  box-sizing: border-box;
-}
-.search-input:focus {
-  border-color: #2c3e50;
-  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
-}
-.sort-select {
-  padding: 12px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  font-family: inherit;
-  background: white;
-  cursor: pointer;
-  transition: border-color 0.3s;
-  box-sizing: border-box;
-  min-width: 180px;
-}
-.sort-select:focus {
-  border-color: #2c3e50;
-  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
-}
-@media (max-width: 768px) {
-  .search-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .search-input {
-    width: 100%;
-    min-width: 100%;
-  }
-  .sort-select {
-    width: 100%;
-  }
-}
-.upload-bar { margin: 16px 0; }
-.btn-abrir-form {
-  background: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-.btn-abrir-form:hover { opacity: 0.85; }
-.upload-form {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 24px;
-}
-.upload-form h3 { margin: 0 0 16px 0; font-size: 15px; color: #1f2937; border-bottom: none !important; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group:last-child { grid-column: 1 / -1; }
-.form-group label { font-size: 12px; font-weight: 600; color: #6b7280; }
-.form-group input {
-  padding: 8px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 7px;
-  font-size: 13px;
-  outline: none;
-  font-family: inherit;
-}
-.form-group input:focus { border-color: #2c3e50; }
-.form-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
-.btn-cancelar {
-  padding: 8px 18px;
-  background: #f3f4f6;
-  border: none;
-  border-radius: 7px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
-}
-.btn-subir {
-  padding: 8px 18px;
-  background: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 7px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-.btn-subir:hover { opacity: 0.85; }
-.upload-msg { margin-top: 10px; font-size: 13px; padding: 8px 12px; border-radius: 6px; display: none; }
-.upload-msg.ok { background: #dcfce7; color: #166534; display: block; }
-.upload-msg.err { background: #fee2e2; color: #dc2626; display: block; }
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 8px;
-}
-.doc-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-.doc-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
-.doc-icon { font-size: 36px; }
-.doc-info h3 { margin: 0 0 6px 0; font-size: 15px; color: #1f2937; line-height: 1.4; border-bottom: none !important; }
-.doc-info p { margin: 0 0 4px 0; font-size: 13px; color: #6b7280; line-height: 1.5; }
-.doc-date { font-size: 11px; color: #9ca3af; }
-.doc-actions { display: flex; gap: 10px; margin-top: auto; }
-.btn-preview {
-  flex: 1; padding: 8px 12px; background: #2c3e50; color: white;
-  border: none; border-radius: 7px; cursor: pointer; font-size: 13px;
-  font-weight: 600; transition: opacity 0.2s;
-}
-.btn-preview:hover { opacity: 0.85; }
-.btn-download {
-  flex: 1; padding: 8px 12px; background: #f3f4f6; color: #374151;
-  border-radius: 7px; text-decoration: none !important; font-size: 13px;
-  font-weight: 600; text-align: center; transition: background 0.2s;
-}
-.btn-download:hover { background: #e5e7eb; }
-.btn-download-full {
-  width: 100%; padding: 10px 16px; background: #dc2626; color: white;
-  border-radius: 8px; text-decoration: none !important; font-size: 14px;
-  font-weight: 600; text-align: center; transition: background 0.2s;
-  display: block;
-}
-.btn-download-full:hover { background: #b91c1c; }
-.btn-eliminar {
-  padding: 8px 12px; background: #fee2e2; color: #dc2626;
-  border: none; border-radius: 7px; cursor: pointer; font-size: 13px;
-  font-weight: 600; transition: background 0.2s;
-}
-.btn-eliminar:hover { background: #fecaca; }
-.empty-state { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; }
-@media (max-width: 768px) {
-  .form-grid { grid-template-columns: 1fr; }
-  .cards-grid { grid-template-columns: 1fr; }
-}
-</style>
 
 <script>
 (function() {
@@ -216,7 +71,7 @@
     var f = document.getElementById('upload-form');
     if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
     var msg = document.getElementById('upload-msg');
-    if (msg) { msg.className = 'upload-msg'; msg.textContent = ''; }
+    if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
   }
   window.toggleForm = toggleForm;
 
@@ -230,7 +85,7 @@
         renderDocs(docs);
       })
       .catch(function() {
-        grid.innerHTML = '<div class="empty-state">⚠️ No se pudo conectar al servidor.</div>';
+        grid.innerHTML = '<div class="col-12"><div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> No se pudo conectar al servidor.</div></div>';
       });
   }
 
@@ -239,28 +94,33 @@
     if (!grid) return;
     
     if (!docs.length) {
-      grid.innerHTML = '<div class="empty-state">📭 No hay actas todavía. ¡Sube la primera!</div>';
+      grid.innerHTML = '<div class="col-12"><div class="alert alert-info"><i class="bi bi-inbox"></i> No hay actas todavía. ¡Sube la primera!</div></div>';
       return;
     }
     
-    // Obtener orden seleccionado
     var sortOrder = document.getElementById('sort-actas').value;
-    
-    // Ordenar según la selección
     docs.sort(function(a, b) { 
       return sortOrder === 'asc' ? a.id - b.id : b.id - a.id;
     });
     
     grid.innerHTML = docs.map(function(d) {
-      return '<div class="doc-card">' +
-        '<div class="doc-icon">📄</div>' +
-        '<div class="doc-info">' +
-          '<h3>' + d.titulo + '</h3>' +
-          (d.descripcion ? '<p>' + d.descripcion + '</p>' : '') +
-          '<div class="doc-date">📅 Agregado: ' + d.fecha + '</div>' +
-        '</div>' +
-        '<div class="doc-actions">' +
-          '<a class="btn-download-full" href="' + d.archivo + '" download>📥 Descargar PDF</a>' +
+      return '<div class="col-md-6 col-lg-4">' +
+        '<div class="card h-100 shadow-sm">' +
+          '<div class="card-body">' +
+            '<div class="d-flex align-items-center mb-3">' +
+              '<i class="bi bi-file-earmark-pdf text-danger fs-1 me-3"></i>' +
+              '<div class="flex-grow-1">' +
+                '<h5 class="card-title mb-1">' + d.titulo + '</h5>' +
+                '<small class="text-muted"><i class="bi bi-calendar3"></i> ' + d.fecha + '</small>' +
+              '</div>' +
+            '</div>' +
+            (d.descripcion ? '<p class="card-text text-muted small">' + d.descripcion + '</p>' : '') +
+          '</div>' +
+          '<div class="card-footer bg-transparent">' +
+            '<a href="' + d.archivo + '" class="btn btn-danger w-100" download>' +
+              '<i class="bi bi-download"></i> Descargar PDF' +
+            '</a>' +
+          '</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -273,8 +133,9 @@
     var msg    = document.getElementById('upload-msg');
 
     if (!titulo || !pdf) {
-      msg.className = 'upload-msg err';
-      msg.textContent = '⚠️ El título y el PDF son obligatorios.';
+      msg.className = 'alert alert-danger';
+      msg.style.display = 'block';
+      msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> El título y el PDF son obligatorios.';
       return;
     }
 
@@ -283,8 +144,9 @@
     form.append('descripcion', desc);
     form.append('pdf', pdf);
 
-    var btn = document.querySelector('.btn-subir');
-    btn.textContent = 'Subiendo...';
+    var btn = document.querySelector('.card-footer .btn-primary');
+    var originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subiendo...';
     btn.disabled = true;
 
     fetch(API, { 
@@ -297,8 +159,9 @@
       .then(function(r) { return r.json(); })
       .then(function(res) {
         if (res.error) throw new Error(res.error);
-        msg.className = 'upload-msg ok';
-        msg.textContent = '✅ Acta subida correctamente!';
+        msg.className = 'alert alert-success';
+        msg.style.display = 'block';
+        msg.innerHTML = '<i class="bi bi-check-circle"></i> Acta subida correctamente!';
         document.getElementById('input-titulo').value = '';
         document.getElementById('input-desc').value = '';
         document.getElementById('input-pdf').value = '';
@@ -306,29 +169,16 @@
         setTimeout(function() { toggleForm(); }, 1500);
       })
       .catch(function(e) {
-        msg.className = 'upload-msg err';
-        msg.textContent = '⚠️ Error: ' + e.message;
+        msg.className = 'alert alert-danger';
+        msg.style.display = 'block';
+        msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error: ' + e.message;
       })
       .finally(function() {
-        btn.textContent = '📤 Subir';
+        btn.innerHTML = originalText;
         btn.disabled = false;
       });
   };
 
-  window.eliminarDoc = function(id) {
-    if (!confirm('¿Seguro que quieres eliminar este documento?')) return;
-    fetch(API + '/' + id, { 
-      method: 'DELETE',
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-      }
-    })
-      .then(function(r) { return r.json(); })
-      .then(function() { cargarDocs(); })
-      .catch(function() { alert('Error al eliminar el documento.'); });
-  };
-
-  // Función de búsqueda
   function buscarActas() {
     var searchTerm = document.getElementById('search-actas').value.toLowerCase();
     var filtered = allDocs.filter(function(doc) {
@@ -338,7 +188,6 @@
     renderDocs(filtered);
   }
 
-  // Event listeners
   document.addEventListener('DOMContentLoaded', function() {
     var searchInput = document.getElementById('search-actas');
     if (searchInput) {
@@ -353,7 +202,6 @@
     cargarDocs();
   });
 
-  // Cargar al iniciar
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', cargarDocs);
   } else {

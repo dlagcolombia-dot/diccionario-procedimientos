@@ -75,29 +75,33 @@
     .btn-login {
       width: 100%;
       padding: 14px;
-      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      background: #dc2626;
       color: white;
       border: none;
       border-radius: 8px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
     }
     
     .btn-login:hover {
+      background: #ef4444;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
     }
     
     .btn-login:active {
       transform: translateY(0);
+      background: #b91c1c;
     }
     
     .btn-login:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
+      background: #9ca3af;
     }
     
     .alert {
