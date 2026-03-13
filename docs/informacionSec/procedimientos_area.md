@@ -118,9 +118,9 @@
             (d.descripcion ? '<p class="doc-description">' + d.descripcion + '</p>' : '<p class="doc-description text-muted">Sin descripción</p>') +
           '</div>' +
           '<div class="doc-card-footer">' +
-            '<button class="btn-doc-action btn-preview" onclick="previewPDFProcedimientos(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">' +
+            '<a href="' + d.archivo + '" target="_blank" class="btn-doc-action btn-preview">' +
               '<i class="bi bi-eye"></i> Vista Previa' +
-            '</button>' +
+            '</a>' +
             '<a href="' + d.archivo + '" class="btn-doc-action btn-download" download>' +
               '<i class="bi bi-download"></i>' +
             '</a>' +
@@ -225,51 +225,6 @@
 })();
 </script>
 
-
-<!-- Modal de Vista Previa -->
-<div id="preview-modal-procedimientos" class="preview-modal" onclick="closePreviewProcedimientos(event)">
-  <div class="preview-modal-content">
-    <div class="preview-modal-header">
-      <h3 id="preview-title-procedimientos"></h3>
-      <button class="preview-close-btn" onclick="closePreviewProcedimientos()">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    <div class="preview-modal-body">
-      <iframe id="preview-iframe-procedimientos" frameborder="0"></iframe>
-    </div>
-  </div>
-</div>
-
-<script>
-function previewPDFProcedimientos(url, title) {
-  var modal = document.getElementById('preview-modal-procedimientos');
-  var iframe = document.getElementById('preview-iframe-procedimientos');
-  var titleEl = document.getElementById('preview-title-procedimientos');
-  
-  if (modal && iframe && titleEl) {
-    titleEl.textContent = title;
-    iframe.src = url;
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closePreviewProcedimientos(event) {
-  if (!event || event.target.id === 'preview-modal-procedimientos' || event.type === 'click') {
-    var modal = document.getElementById('preview-modal-procedimientos');
-    var iframe = document.getElementById('preview-iframe-procedimientos');
-    
-    if (modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-    if (iframe) {
-      iframe.src = '';
-    }
-  }
-}
-</script>
 
 <style>
 /* Tarjetas de documentos mejoradas */
@@ -414,122 +369,7 @@ function closePreviewProcedimientos(event) {
 }
 
 /* Modal de Vista Previa */
-.preview-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 9999;
-  animation: fadeIn 0.3s ease;
-}
-
-.preview-modal.active {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.preview-modal-content {
-  background: white;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 1200px;
-  height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.preview-modal-header {
-  padding: 20px 25px;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f9fafb;
-  border-radius: 16px 16px 0 0;
-}
-
-.preview-modal-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1f2937;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.preview-close-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: #dc2626;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  flex-shrink: 0;
-  margin-left: 15px;
-}
-
-.preview-close-btn:hover {
-  background: #b91c1c;
-  transform: rotate(90deg);
-}
-
-.preview-modal-body {
-  flex: 1;
-  overflow: hidden;
-  border-radius: 0 0 16px 16px;
-}
-
-.preview-modal-body iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
 @media (max-width: 768px) {
-  .preview-modal-content {
-    height: 95vh;
-    max-width: 100%;
-    margin: 10px;
-  }
-  
-  .preview-modal-header h3 {
-    font-size: 16px;
-  }
-  
   .doc-card-footer {
     flex-direction: column;
   }

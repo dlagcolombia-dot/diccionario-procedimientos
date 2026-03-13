@@ -118,9 +118,9 @@
             (d.descripcion ? '<p class="doc-description">' + d.descripcion + '</p>' : '<p class="doc-description text-muted">Sin descripción</p>') +
           '</div>' +
           '<div class="doc-card-footer">' +
-            '<button class="btn-doc-action btn-preview" onclick="previewPDF(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">' +
+            '<a href="' + d.archivo + '" class="btn-doc-action btn-preview" target="_blank">' +
               '<i class="bi bi-eye"></i> Vista Previa' +
-            '</button>' +
+            '</a>' +
             '<a href="' + d.archivo + '" class="btn-doc-action btn-download" download>' +
               '<i class="bi bi-download"></i>' +
             '</a>' +
