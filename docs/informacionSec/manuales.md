@@ -3,7 +3,7 @@
 <div class="container-fluid px-0">
   <!-- Barra de búsqueda y filtros -->
   <div class="row g-3 mb-4">
-    <div class="col-md-8">
+    <div class="col-md-6">
       <div class="input-group">
         <span class="input-group-text bg-white">
           <i class="bi bi-search"></i>
@@ -11,10 +11,16 @@
         <input type="text" id="search-manuales" class="form-control" placeholder="Buscar manual por título o descripción..." />
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <select id="sort-manuales" class="form-select">
-        <option value="desc"><i class="bi bi-calendar"></i> Más reciente primero</option>
-        <option value="asc"><i class="bi bi-calendar"></i> Más antiguo primero</option>
+        <option value="desc">Más reciente primero</option>
+        <option value="asc">Más antiguo primero</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select id="filter-manuales" class="form-select">
+        <option value="all">Todos los documentos</option>
+        <option value="favorites">⭐ Solo favoritos</option>
       </select>
     </div>
   </div>
