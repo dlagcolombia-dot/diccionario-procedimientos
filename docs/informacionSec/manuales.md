@@ -72,6 +72,32 @@
 (function() {
   var API = (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com') + '/api/manuales';
   var allDocs = [];
+  
+  // Sistema de favoritos con localStorage
+  function getFavorites() {
+    var favs = localStorage.getItem('favorites_manuales');
+    return favs ? JSON.parse(favs) : [];
+  }
+  
+  function toggleFavorite(docId) {
+    var favorites = getFavorites();
+    var index = favorites.indexOf(docId);
+    
+    if (index > -1) {
+      favorites.splice(index, 1);
+    } else {
+      favorites.push(docId);
+    }
+    
+    localStorage.setItem('favorites_manuales', JSON.stringify(favorites));
+    renderDocs(allDocs);
+  }
+  
+  function isFavorite(docId) {
+    return getFavorites().indexOf(docId) > -1;
+  }
+  
+  window.toggleFavorite = toggleFavorite;
 
   function toggleFormManuales() {
     var f = document.getElementById('upload-form-manuales');
@@ -99,8 +125,18 @@
     var grid = document.getElementById('manuales-grid');
     if (!grid) return;
     
+    // Filtrar por favoritos si está seleccionado
+    var filterValue = document.getElementById('filter-manuales').value;
+    if (filterValue === 'favorites') {
+      var favorites = getFavorites();
+      docs = docs.filter(function(d) { return favorites.indexOf(d.id) > -1; });
+    }
+    
     if (!docs.length) {
-      grid.innerHTML = '<div class="col-12"><div class="alert alert-info"><i class="bi bi-inbox"></i> No hay manuales todavía. ¡Sube el primero!</div></div>';
+      var msg = filterValue === 'favorites' 
+        ? '<div class="col-12"><div class="alert alert-info"><i class="bi bi-star"></i> No tienes manuales marcados como favoritos. Haz clic en la estrella de cualquier documento para agregarlo.</div></div>'
+        : '<div class="col-12"><div class="alert alert-info"><i class="bi bi-inbox"></i> No hay manuales todavía. ¡Sube el primero!</div></div>';
+      grid.innerHTML = msg;
       return;
     }
     
@@ -110,6 +146,8 @@
     });
     
     grid.innerHTML = docs.map(function(d) {
+      var isFav = isFavorite(d.id);
+      
       return '<div class="col-md-6 col-lg-4">' +
         '<div class="doc-card">' +
           '<div class="doc-card-header">' +
@@ -119,7 +157,12 @@
             '<div class="doc-badge">PDF</div>' +
           '</div>' +
           '<div class="doc-card-body">' +
-            '<h5 class="doc-title">' + d.titulo + '</h5>' +
+            '<div class="d-flex justify-content-between align-items-start mb-2">' +
+              '<h5 class="doc-title mb-0">' + d.titulo + '</h5>' +
+              '<button class="btn-favorite ' + (isFav ? 'active' : '') + '" onclick="toggleFavorite(' + d.id + ')" title="' + (isFav ? 'Quitar de favoritos' : 'Agregar a favoritos') + '">' +
+                '<i class="bi bi-star' + (isFav ? '-fill' : '') + '"></i>' +
+              '</button>' +
+            '</div>' +
             '<p class="doc-date"><i class="bi bi-calendar3"></i> ' + d.fecha + '</p>' +
             (d.descripcion ? '<p class="doc-description">' + d.descripcion + '</p>' : '<p class="doc-description text-muted">Sin descripción</p>') +
           '</div>' +
@@ -128,6 +171,13 @@
               '<i class="bi bi-eye"></i> Vista Previa' +
             '</a>' +
             '<a href="' + d.archivo + '" class="btn-doc-action btn-download" download>' +
+              '<i class="bi bi-download"></i>' +
+            '</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
               '<i class="bi bi-download"></i>' +
             '</a>' +
           '</div>' +
@@ -206,6 +256,12 @@
     var sortSelect = document.getElementById('sort-manuales');
     if (sortSelect) {
       sortSelect.addEventListener('change', function() {
+        renderDocs(allDocs);
+      });
+    }
+    var filterSelect = document.getElementById('filter-manuales');
+    if (filterSelect) {
+      filterSelect.addEventListener('change', function() {
         renderDocs(allDocs);
       });
     }
@@ -341,12 +397,40 @@ function closePreviewManuales(event) {
   font-size: 18px;
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 8px;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
+}
+
+.btn-favorite {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.btn-favorite:hover {
+  color: #fbbf24;
+  background: #fef3c7;
+  transform: scale(1.1);
+}
+
+.btn-favorite.active {
+  color: #fbbf24;
+  animation: starPulse 0.5s ease;
+}
+
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
 }
 
 .doc-date {

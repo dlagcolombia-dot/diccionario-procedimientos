@@ -1,14 +1,21 @@
 const bcrypt = require('bcryptjs');
 
-// Usuarios del sistema
-// Contraseñas encriptadas con bcrypt
+// Usuarios del sistema con roles
+// Roles: 'admin', 'colaborador', 'visitante' (sin login)
 const users = [
   {
     id: 1,
     username: 'admin',
     // Contraseña: admin123
     password: '$2b$10$dRV9mzkJMwbFImRIwoWQEO7WMgBo3WjRrQEuI8YT9oRge2VbV2GCe',
-    role: 'Usuario'
+    role: 'admin'
+  },
+  {
+    id: 2,
+    username: 'colaborador',
+    // Contraseña: colaborador123
+    password: '$2b$10$AvPu5SQ7Zum3YiGcphJg0ODJEn8kurBpCLq61hMe.P020Yuni6Pau',
+    role: 'colaborador'
   }
 ];
 
