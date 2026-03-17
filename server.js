@@ -196,45 +196,49 @@ app.post('/api/:modulo', requireAuth, upload.single('pdf'), async (req, res) => 
 
   try {
     // Subir a Cloudinary como imagen para permitir acceso público
-   const uploadStream = cloudinary.uploader.upload_stream(
-  {
-    folder: `diccionario/${modulo}`,
-    resource_type: 'raw',            // ✅ Cambiado de 'image' a 'raw'
-    public_id: req.file.originalname
-      .replace(/\s+/g, '-')
-      .replace(/[^a-zA-Z0-9.\-_]/g, '')
-      .replace('.pdf', ''),
-    format: 'pdf',
-    access_mode: 'public',
-    type: 'upload'
-  },
-  (error, result) => {
-    if (error) {
-      console.error('Error subiendo a Cloudinary:', error);
-      return res.status(500).json({ error: 'Error al subir el archivo' });
-    }
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: `diccionario/${modulo}`,
+        resource_type: 'image',
+        public_id: req.file.originalname.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9.\-_]/g, '').replace('.pdf', ''),
+        format: 'pdf',
+        access_mode: 'public',
+        type: 'upload'
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Error subiendo a Cloudinary:', error);
+          return res.status(500).json({ error: 'Error al subir el archivo' });
+        }
 
-    // ✅ Usar secure_url directamente — es permanente, no expira
-    const nuevoDoc = {
-      id: Date.now(),
-      titulo,
-      descripcion: descripcion || '',
-      area: area || 'General',
-      archivo: result.secure_url,    // ✅ Sin sign_url, esta URL nunca expira
-      cloudinary_id: result.public_id,
-      fecha: today()
-    };
+        // Generar URL firmada para acceso público
+        const signedUrl = cloudinary.url(result.public_id, {
+          resource_type: 'image',
+          type: 'upload',
+          sign_url: true,
+          secure: true
+        });
 
-    writeData(modulo, nuevoDoc).then(() => {
-      console.log(`[${modulo.toUpperCase()}] Nuevo documento: ${titulo}`);
-      res.status(201).json({ mensaje: 'Documento subido correctamente', doc: nuevoDoc });
-    }).catch(err => {
-      console.error('Error guardando en MongoDB:', err);
-      res.status(500).json({ error: 'Error al guardar el documento' });
-    });
-  }
-);
-          
+        // Usar la URL segura directamente
+        const nuevoDoc = {
+          id: Date.now(),
+          titulo,
+          descripcion: descripcion || '',
+          area: area || 'General',
+          archivo: signedUrl || result.secure_url,
+          cloudinary_id: result.public_id,
+          fecha: today()
+        };
+
+        writeData(modulo, nuevoDoc).then(() => {
+          console.log(`[${modulo.toUpperCase()}] Nuevo documento: ${titulo}`);
+          res.status(201).json({ mensaje: 'Documento subido correctamente', doc: nuevoDoc });
+        }).catch(err => {
+          console.error('Error guardando en MongoDB:', err);
+          res.status(500).json({ error: 'Error al guardar el documento' });
+        });
+      }
+    );
 
     // Escribir el buffer al stream
     uploadStream.end(req.file.buffer);
@@ -267,7 +271,7 @@ app.delete('/api/:modulo/:id', requireAuth, async (req, res) => {
         await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'raw', invalidate: true });
       } catch (e) {
         try {
-          await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'raw', invalidate: true });
+          await cloudinary.uploader.destroy(doc.cloudinary_id, { resource_type: 'image', invalidate: true });
         } catch (e2) {
           console.log('No se pudo eliminar de Cloudinary, puede que ya no exista');
         }
