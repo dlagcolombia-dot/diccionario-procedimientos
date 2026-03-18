@@ -54,11 +54,23 @@
       </div>
       <div class="mt-3">
         <div id="upload-msg-manuales" class="alert" style="display:none"></div>
+        <!-- Barra de progreso -->
+        <div id="progress-container-manuales" style="display:none">
+          <div class="d-flex justify-content-between mb-1">
+            <small class="text-muted"><i class="bi bi-cloud-upload"></i> Subiendo archivo a Cloudinary...</small>
+            <small id="progress-percent-manuales" class="fw-bold" style="color:#dc2626">0%</small>
+          </div>
+          <div class="progress" style="height: 10px; border-radius: 10px;">
+            <div id="progress-bar-manuales" class="progress-bar progress-bar-striped progress-bar-animated"
+                 role="progressbar" style="width: 0%; background-color: #dc2626; border-radius: 10px;"></div>
+          </div>
+          <small class="text-muted mt-1 d-block">Esto puede tardar unos segundos dependiendo del tamaño del archivo.</small>
+        </div>
       </div>
     </div>
     <div class="card-footer">
       <button class="btn btn-secondary" onclick="toggleFormManuales()">Cancelar</button>
-      <button class="btn btn-primary ms-2" onclick="subirDocManuales('manuales')">
+      <button class="btn btn-primary ms-2" onclick="subirDocManuales()">
         <i class="bi bi-cloud-upload"></i> Subir
       </button>
     </div>
@@ -68,35 +80,65 @@
   <div id="manuales-grid" class="row g-3"></div>
 </div>
 
+<!-- Toast de notificaciones -->
+<div id="toast-container-manuales" style="
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+"></div>
+
 <script>
 (function() {
   var API = (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://diccionario-backend-ahtd.onrender.com') + '/api/manuales';
   var allDocs = [];
-  
-  // Sistema de favoritos con localStorage
+
+  // Toast
+  function mostrarToast(mensaje, tipo) {
+    var container = document.getElementById('toast-container-manuales');
+    if (!container) return;
+    var colores = {
+      success: { bg: '#16a34a', icon: '✅' },
+      error:   { bg: '#dc2626', icon: '❌' },
+      info:    { bg: '#2563eb', icon: 'ℹ️' }
+    };
+    var c = colores[tipo] || colores.info;
+    var toast = document.createElement('div');
+    toast.style.cssText = 'background:' + c.bg + ';color:white;padding:14px 20px;border-radius:10px;' +
+      'box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:14px;font-weight:600;' +
+      'display:flex;align-items:center;gap:10px;min-width:280px;max-width:380px;' +
+      'animation:slideInToast 0.3s ease;';
+    toast.innerHTML = c.icon + ' ' + mensaje;
+    container.appendChild(toast);
+    setTimeout(function() {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.4s';
+      setTimeout(function() { toast.remove(); }, 400);
+    }, 4000);
+  }
+
+  // Favoritos
   function getFavorites() {
     var favs = localStorage.getItem('favorites_manuales');
     return favs ? JSON.parse(favs) : [];
   }
-  
+
   function toggleFavorite(docId) {
     var favorites = getFavorites();
     var index = favorites.indexOf(docId);
-    
-    if (index > -1) {
-      favorites.splice(index, 1);
-    } else {
-      favorites.push(docId);
-    }
-    
+    if (index > -1) favorites.splice(index, 1);
+    else favorites.push(docId);
     localStorage.setItem('favorites_manuales', JSON.stringify(favorites));
     renderDocs(allDocs);
   }
-  
+
   function isFavorite(docId) {
     return getFavorites().indexOf(docId) > -1;
   }
-  
+
   window.toggleFavorite = toggleFavorite;
 
   function toggleFormManuales() {
@@ -104,6 +146,8 @@
     if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
     var msg = document.getElementById('upload-msg-manuales');
     if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+    var pc = document.getElementById('progress-container-manuales');
+    if (pc) pc.style.display = 'none';
   }
   window.toggleFormManuales = toggleFormManuales;
 
@@ -124,36 +168,32 @@
   function renderDocs(docs) {
     var grid = document.getElementById('manuales-grid');
     if (!grid) return;
-    
-    // Filtrar por favoritos si está seleccionado
+
     var filterValue = document.getElementById('filter-manuales').value;
     if (filterValue === 'favorites') {
       var favorites = getFavorites();
       docs = docs.filter(function(d) { return favorites.indexOf(d.id) > -1; });
     }
-    
+
     if (!docs.length) {
-      var msg = filterValue === 'favorites' 
-        ? '<div class="col-12"><div class="alert alert-info"><i class="bi bi-star"></i> No tienes manuales marcados como favoritos. Haz clic en la estrella de cualquier documento para agregarlo.</div></div>'
+      var msg = filterValue === 'favorites'
+        ? '<div class="col-12"><div class="alert alert-info"><i class="bi bi-star"></i> No tienes manuales marcados como favoritos.</div></div>'
         : '<div class="col-12"><div class="alert alert-info"><i class="bi bi-inbox"></i> No hay manuales todavía. ¡Sube el primero!</div></div>';
       grid.innerHTML = msg;
       return;
     }
-    
+
     var sortOrder = document.getElementById('sort-manuales').value;
-    docs.sort(function(a, b) { 
+    docs.sort(function(a, b) {
       return sortOrder === 'asc' ? a.id - b.id : b.id - a.id;
     });
-    
+
     grid.innerHTML = docs.map(function(d) {
       var isFav = isFavorite(d.id);
-      
       return '<div class="col-md-6 col-lg-4">' +
         '<div class="doc-card">' +
           '<div class="doc-card-header">' +
-            '<div class="doc-icon">' +
-              '<i class="bi bi-file-earmark-pdf"></i>' +
-            '</div>' +
+            '<div class="doc-icon"><i class="bi bi-file-earmark-pdf"></i></div>' +
             '<div class="doc-badge">PDF</div>' +
           '</div>' +
           '<div class="doc-card-body">' +
@@ -167,17 +207,10 @@
             (d.descripcion ? '<p class="doc-description">' + d.descripcion + '</p>' : '<p class="doc-description text-muted">Sin descripción</p>') +
           '</div>' +
           '<div class="doc-card-footer">' +
-            '<a href="' + d.archivo + '" class="btn-doc-action btn-preview" target="_blank">' +
+            '<button class="btn-doc-action btn-preview" onclick="previewPDFManuales(\'' + d.archivo + '\', \'' + d.titulo.replace(/'/g, "\\'") + '\')">' +
               '<i class="bi bi-eye"></i> Vista Previa' +
-            '</a>' +
-            '<a href="' + d.archivo + '" class="btn-doc-action btn-download" download>' +
-              '<i class="bi bi-download"></i>' +
-            '</a>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
+            '</button>' +
+            '<a href="' + d.archivo + '" class="btn-doc-action btn-download" download title="Descargar">' +
               '<i class="bi bi-download"></i>' +
             '</a>' +
           '</div>' +
@@ -186,7 +219,8 @@
     }).join('');
   }
 
-  window.subirDocManuales = function(modulo) {
+  // ✅ Subir con barra de progreso
+  window.subirDocManuales = function() {
     var titulo = document.getElementById('input-titulo-manuales').value.trim();
     var desc   = document.getElementById('input-desc-manuales').value.trim();
     var pdf    = document.getElementById('input-pdf-manuales').files[0];
@@ -205,44 +239,71 @@
     form.append('pdf', pdf);
 
     var btn = document.querySelector('#upload-form-manuales .card-footer .btn-primary');
-    var originalText = btn.innerHTML;
+    var pc  = document.getElementById('progress-container-manuales');
+    var pb  = document.getElementById('progress-bar-manuales');
+    var pp  = document.getElementById('progress-percent-manuales');
+
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subiendo...';
     btn.disabled = true;
+    msg.style.display = 'none';
+    pc.style.display = 'block';
+    pb.style.width = '0%';
+    pp.textContent = '0%';
 
-    fetch(API, { 
-      method: 'POST', 
-      body: form,
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+    var xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener('progress', function(e) {
+      if (e.lengthComputable) {
+        var pct = Math.round((e.loaded / e.total) * 100);
+        pb.style.width = pct + '%';
+        pp.textContent = pct + '%';
       }
-    })
-      .then(function(r) { return r.json(); })
-      .then(function(res) {
+    });
+
+    xhr.addEventListener('load', function() {
+      pc.style.display = 'none';
+      btn.innerHTML = '<i class="bi bi-cloud-upload"></i> Subir';
+      btn.disabled = false;
+      try {
+        var res = JSON.parse(xhr.responseText);
         if (res.error) throw new Error(res.error);
         msg.className = 'alert alert-success';
         msg.style.display = 'block';
-        msg.innerHTML = '<i class="bi bi-check-circle"></i> Manual subido correctamente!';
+        msg.innerHTML = '<i class="bi bi-check-circle"></i> ¡Manual subido correctamente!';
         document.getElementById('input-titulo-manuales').value = '';
         document.getElementById('input-desc-manuales').value = '';
         document.getElementById('input-pdf-manuales').value = '';
+        pb.style.width = '0%';
+        mostrarToast('✅ "' + titulo + '" subido correctamente', 'success');
         cargarDocs();
         setTimeout(function() { toggleFormManuales(); }, 1500);
-      })
-      .catch(function(e) {
+      } catch(e) {
         msg.className = 'alert alert-danger';
         msg.style.display = 'block';
         msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error: ' + e.message;
-      })
-      .finally(function() {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      });
+        mostrarToast('Error al subir: ' + e.message, 'error');
+      }
+    });
+
+    xhr.addEventListener('error', function() {
+      pc.style.display = 'none';
+      btn.innerHTML = '<i class="bi bi-cloud-upload"></i> Subir';
+      btn.disabled = false;
+      msg.className = 'alert alert-danger';
+      msg.style.display = 'block';
+      msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> Error de conexión. Inténtalo de nuevo.';
+      mostrarToast('Error de conexión al subir el archivo', 'error');
+    });
+
+    xhr.open('POST', API);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('authToken'));
+    xhr.send(form);
   };
 
   function buscarManuales() {
     var searchTerm = document.getElementById('search-manuales').value.toLowerCase();
     var filtered = allDocs.filter(function(doc) {
-      return doc.titulo.toLowerCase().includes(searchTerm) || 
+      return doc.titulo.toLowerCase().includes(searchTerm) ||
              (doc.descripcion && doc.descripcion.toLowerCase().includes(searchTerm));
     });
     renderDocs(filtered);
@@ -250,21 +311,11 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     var searchInput = document.getElementById('search-manuales');
-    if (searchInput) {
-      searchInput.addEventListener('input', buscarManuales);
-    }
+    if (searchInput) searchInput.addEventListener('input', buscarManuales);
     var sortSelect = document.getElementById('sort-manuales');
-    if (sortSelect) {
-      sortSelect.addEventListener('change', function() {
-        renderDocs(allDocs);
-      });
-    }
+    if (sortSelect) sortSelect.addEventListener('change', function() { renderDocs(allDocs); });
     var filterSelect = document.getElementById('filter-manuales');
-    if (filterSelect) {
-      filterSelect.addEventListener('change', function() {
-        renderDocs(allDocs);
-      });
-    }
+    if (filterSelect) filterSelect.addEventListener('change', function() { renderDocs(allDocs); });
     cargarDocs();
   });
 
@@ -273,22 +324,15 @@
   } else {
     cargarDocs();
     var searchInput = document.getElementById('search-manuales');
-    if (searchInput) {
-      searchInput.addEventListener('input', buscarManuales);
-    }
+    if (searchInput) searchInput.addEventListener('input', buscarManuales);
     var sortSelect = document.getElementById('sort-manuales');
-    if (sortSelect) {
-      sortSelect.addEventListener('change', function() {
-        renderDocs(allDocs);
-      });
-    }
+    if (sortSelect) sortSelect.addEventListener('change', function() { renderDocs(allDocs); });
   }
   setTimeout(cargarDocs, 300);
 })();
 </script>
 
-
-<!-- Modal de Vista Previa -->
+<!-- Modal de Vista Previa con error amigable -->
 <div id="preview-modal-manuales" class="preview-modal" onclick="closePreviewManuales(event)">
   <div class="preview-modal-content">
     <div class="preview-modal-header">
@@ -298,334 +342,132 @@
       </button>
     </div>
     <div class="preview-modal-body">
+      <div id="pdf-error-manuales" style="display:none; padding:60px 40px; text-align:center;">
+        <div style="font-size:64px; margin-bottom:16px;">📄</div>
+        <h4 style="color:#1f2937; margin-bottom:8px;">No se pudo cargar el PDF</h4>
+        <p style="color:#6b7280; margin-bottom:24px; max-width:360px; margin-left:auto; margin-right:auto;">
+          El archivo puede estar cargando lentamente o no disponible en este momento.
+        </p>
+        <button class="btn btn-primary me-2" id="btn-retry-manuales">
+          <i class="bi bi-arrow-clockwise"></i> Reintentar
+        </button>
+        <a id="btn-open-manuales" href="#" target="_blank" class="btn btn-outline-secondary">
+          <i class="bi bi-box-arrow-up-right"></i> Abrir en otra pestaña
+        </a>
+      </div>
       <iframe id="preview-iframe-manuales" frameborder="0"></iframe>
     </div>
   </div>
 </div>
 
 <script>
+var _currentPdfUrlManuales = '';
+
 function previewPDFManuales(url, title) {
-  var modal = document.getElementById('preview-modal-manuales');
-  var iframe = document.getElementById('preview-iframe-manuales');
-  var titleEl = document.getElementById('preview-title-manuales');
-  
+  _currentPdfUrlManuales = url;
+  var modal    = document.getElementById('preview-modal-manuales');
+  var iframe   = document.getElementById('preview-iframe-manuales');
+  var titleEl  = document.getElementById('preview-title-manuales');
+  var errorMsg = document.getElementById('pdf-error-manuales');
+  var btnOpen  = document.getElementById('btn-open-manuales');
+  var btnRetry = document.getElementById('btn-retry-manuales');
+
   if (modal && iframe && titleEl) {
     titleEl.textContent = title;
+    errorMsg.style.display = 'none';
+    iframe.style.display = 'block';
     iframe.src = url;
+    btnOpen.href = url;
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    clearTimeout(window._pdfTimeoutManuales);
+    window._pdfTimeoutManuales = setTimeout(function() {
+      if (iframe.style.display !== 'none') {
+        errorMsg.style.display = 'block';
+        iframe.style.display = 'none';
+      }
+    }, 12000);
+
+    btnRetry.onclick = function() {
+      errorMsg.style.display = 'none';
+      iframe.style.display = 'block';
+      iframe.src = '';
+      clearTimeout(window._pdfTimeoutManuales);
+      setTimeout(function() {
+        iframe.src = _currentPdfUrlManuales;
+        window._pdfTimeoutManuales = setTimeout(function() {
+          if (iframe.style.display !== 'none') {
+            errorMsg.style.display = 'block';
+            iframe.style.display = 'none';
+          }
+        }, 12000);
+      }, 100);
+    };
   }
 }
 
 function closePreviewManuales(event) {
   if (!event || event.target.id === 'preview-modal-manuales' || event.type === 'click') {
-    var modal = document.getElementById('preview-modal-manuales');
+    var modal  = document.getElementById('preview-modal-manuales');
     var iframe = document.getElementById('preview-iframe-manuales');
-    
-    if (modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-    if (iframe) {
-      iframe.src = '';
-    }
+    var errorMsg = document.getElementById('pdf-error-manuales');
+    clearTimeout(window._pdfTimeoutManuales);
+    if (modal)    { modal.classList.remove('active'); document.body.style.overflow = ''; }
+    if (iframe)   { iframe.style.display = 'block'; iframe.src = ''; }
+    if (errorMsg) { errorMsg.style.display = 'none'; }
   }
 }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closePreviewManuales();
+});
 </script>
 
 <style>
-/* Tarjetas de documentos mejoradas */
 .doc-card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  border: 2px solid transparent;
+  background: white; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease;
+  height: 100%; display: flex; flex-direction: column; border: 2px solid transparent;
 }
-
-.doc-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
-  border-color: #dc2626;
-}
-
+.doc-card:hover { transform: translateY(-8px); box-shadow: 0 12px 28px rgba(0,0,0,0.15); border-color: #dc2626; }
 .doc-card-header {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  padding: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
+  padding: 25px; display: flex; align-items: center; justify-content: space-between;
 }
-
-.doc-icon {
-  width: 60px;
-  height: 60px;
-  background: white;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
-}
-
-.doc-icon i {
-  font-size: 32px;
-  color: #dc2626;
-}
-
-.doc-badge {
-  background: #dc2626;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.doc-card-body {
-  padding: 20px;
-  flex-grow: 1;
-}
-
-.doc-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1f2937;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1;
-}
-
-.btn-favorite {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: #d1d5db;
-  cursor: pointer;
-  transition: all 0.3s;
-  padding: 4px 8px;
-  border-radius: 6px;
-  flex-shrink: 0;
-}
-
-.btn-favorite:hover {
-  color: #fbbf24;
-  background: #fef3c7;
-  transform: scale(1.1);
-}
-
-.btn-favorite.active {
-  color: #fbbf24;
-  animation: starPulse 0.5s ease;
-}
-
-@keyframes starPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-}
-
-.doc-date {
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.doc-description {
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin: 0;
-}
-
-.doc-card-footer {
-  padding: 15px 20px;
-  background: #f9fafb;
-  display: flex;
-  gap: 10px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.btn-doc-action {
-  flex: 1;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-}
-
-.btn-preview {
-  background: #dc2626;
-  color: white;
-}
-
-.btn-preview:hover {
-  background: #ef4444;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-}
-
-.btn-download {
-  background: white;
-  color: #dc2626;
-  border: 2px solid #dc2626;
-  flex: 0 0 auto;
-  width: 48px;
-  padding: 10px;
-}
-
-.btn-download:hover {
-  background: #dc2626;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Modal de Vista Previa */
-.preview-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 9999;
-  animation: fadeIn 0.3s ease;
-}
-
-.preview-modal.active {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.preview-modal-content {
-  background: white;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 1200px;
-  height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.preview-modal-header {
-  padding: 20px 25px;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f9fafb;
-  border-radius: 16px 16px 0 0;
-}
-
-.preview-modal-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1f2937;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.preview-close-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: #dc2626;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  flex-shrink: 0;
-  margin-left: 15px;
-}
-
-.preview-close-btn:hover {
-  background: #b91c1c;
-  transform: rotate(90deg);
-}
-
-.preview-modal-body {
-  flex: 1;
-  overflow: hidden;
-  border-radius: 0 0 16px 16px;
-}
-
-.preview-modal-body iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
+.doc-icon { width: 60px; height: 60px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(220,38,38,0.2); }
+.doc-icon i { font-size: 32px; color: #dc2626; }
+.doc-badge { background: #dc2626; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.doc-card-body { padding: 20px; flex-grow: 1; }
+.doc-title { font-size: 18px; font-weight: 700; color: #1f2937; line-height: 1.4; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.btn-favorite { background: none; border: none; font-size: 20px; color: #d1d5db; cursor: pointer; transition: all 0.3s; padding: 4px 8px; border-radius: 6px; flex-shrink: 0; }
+.btn-favorite:hover { color: #fbbf24; background: #fef3c7; transform: scale(1.1); }
+.btn-favorite.active { color: #fbbf24; animation: starPulse 0.5s ease; }
+@keyframes starPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+.doc-date { font-size: 13px; color: #6b7280; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.doc-description { font-size: 14px; color: #6b7280; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin: 0; }
+.doc-card-footer { padding: 15px 20px; background: #f9fafb; display: flex; gap: 10px; border-top: 1px solid #e5e7eb; }
+.btn-doc-action { flex: 1; padding: 10px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+.btn-preview { background: #dc2626; color: white; }
+.btn-preview:hover { background: #ef4444; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); color: white; }
+.btn-download { background: white; color: #dc2626; border: 2px solid #dc2626; flex: 0 0 auto; width: 48px; padding: 10px; }
+.btn-download:hover { background: #dc2626; color: white; transform: translateY(-2px); }
+.preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; }
+.preview-modal.active { display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.preview-modal-content { background: white; border-radius: 16px; width: 100%; max-width: 1200px; height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: slideUp 0.3s ease; }
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.preview-modal-header { padding: 20px 25px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; background: #f9fafb; border-radius: 16px 16px 0 0; }
+.preview-modal-header h3 { margin: 0; font-size: 20px; font-weight: 700; color: #1f2937; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preview-close-btn { width: 40px; height: 40px; border: none; background: #dc2626; color: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; margin-left: 15px; }
+.preview-close-btn:hover { background: #b91c1c; transform: rotate(90deg); }
+.preview-modal-body { flex: 1; overflow: hidden; border-radius: 0 0 16px 16px; }
+.preview-modal-body iframe { width: 100%; height: 100%; border: none; }
+@keyframes slideInToast { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @media (max-width: 768px) {
-  .preview-modal-content {
-    height: 95vh;
-    max-width: 100%;
-    margin: 10px;
-  }
-  
-  .preview-modal-header h3 {
-    font-size: 16px;
-  }
-  
-  .doc-card-footer {
-    flex-direction: column;
-  }
-  
-  .btn-download {
-    width: 100%;
-  }
+  .preview-modal-content { height: 95vh; max-width: 100%; margin: 10px; }
+  .preview-modal-header h3 { font-size: 16px; }
+  .doc-card-footer { flex-direction: column; }
+  .btn-download { width: 100%; }
 }
 </style>
