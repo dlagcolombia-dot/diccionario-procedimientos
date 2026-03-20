@@ -6,12 +6,6 @@
 
 # Forzar HTTPS
 [[redirects]]
-  from = "http://procesosinnovacion.netlify.app/*"
-  to = "https://procesosinnovacion.netlify.app/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

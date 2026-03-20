@@ -6,422 +6,34 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Sistema unificado de procedimientos y automatizaciones">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  
+
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📚</text></svg>">
-  
-  <!-- Tema -->
+
+  <!-- Tema Docsify -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
-  
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
+
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  
+
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="/diseñoIndex.css">
+
   <!-- Mejoras responsive -->
   <link rel="stylesheet" href="/responsive-fixes.css">
-  
+
   <!-- Tour CSS -->
   <link rel="stylesheet" href="/tour.css">
-  
-  <!-- Estilos personalizados -->
-  <style>
-    /* ========================================
-       VARIABLES GLOBALES
-       ======================================== */
-    :root {
-      --theme-color: #2c3e50;
-      --sidebar-width: 300px;
-      --red-primary: #dc2626;
-      --red-hover: #ef4444;
-      --red-dark: #b91c1c;
-      --red-darker: #991b1b;
-      --gray-dark: #1f2937;
-      --gray-medium: #4b5563;
-      --gray-light: #f9fafb;
-      --red-light: #fee2e2;
-      --red-lighter: #fecaca;
-    }
-
-    /* ========================================
-       BOTONES BOOTSTRAP (COLORES CORPORATIVOS)
-       ======================================== */
-    .btn-primary {
-      background-color: var(--red-primary) !important;
-      border-color: var(--red-primary) !important;
-    }
-    .btn-primary:hover {
-      background-color: var(--red-dark) !important;
-      border-color: var(--red-dark) !important;
-    }
-    .btn-primary:focus,
-    .btn-primary:active {
-      background-color: var(--red-darker) !important;
-      border-color: var(--red-darker) !important;
-      box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.25) !important;
-    }
-    
-    .btn-danger {
-      background-color: var(--red-primary) !important;
-      border-color: var(--red-primary) !important;
-      color: white !important;
-    }
-    .btn-danger:hover {
-      background-color: var(--red-hover) !important;
-      border-color: var(--red-hover) !important;
-      color: white !important;
-    }
-    .btn-danger:focus,
-    .btn-danger:active {
-      background-color: var(--red-dark) !important;
-      border-color: var(--red-dark) !important;
-      color: white !important;
-      box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.25) !important;
-    }
-    
-    .card-header.bg-primary {
-      background-color: var(--red-primary) !important;
-    }
-    
-    .input-group-text {
-      border-color: #dee2e6;
-    }
-
-    /* ========================================
-       SIDEBAR - ESTILOS GENERALES
-       ======================================== */
-    .sidebar {
-      background: white !important;
-      border-right: 1px solid #e5e7eb;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-    }
-    
-    .sidebar-nav {
-      padding: 20px 15px;
-    }
-    
-    .sidebar .app-name {
-      color: var(--gray-dark) !important;
-      font-weight: 800;
-      font-size: 19px;
-      padding: 25px 15px 20px 15px;
-      border-bottom: none;
-      margin-bottom: 15px;
-      background: white;
-    }
-    
-    .sidebar .app-name i {
-      color: var(--red-primary);
-      font-size: 22px;
-    }
-
-    /* ========================================
-       SIDEBAR - MENÚ COLAPSABLE
-       ======================================== */
-    .sidebar-nav > ul > li > p {
-      color: var(--gray-dark) !important;
-      font-weight: 700;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      padding: 14px 12px;
-      margin: 15px 0 8px 0;
-      background: var(--gray-light);
-      border-radius: 8px;
-      border-left: 4px solid transparent;
-      transition: all 0.3s;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .sidebar-nav > ul > li > p:hover {
-      color: var(--red-primary) !important;
-      background: var(--red-light);
-      padding-left: 16px;
-    }
-    
-    /* Flecha indicadora */
-    .sidebar-nav > ul > li > p::after {
-      content: '▾';
-      font-size: 12px;
-      margin-left: 6px;
-      transition: transform 0.25s ease;
-      opacity: 0.5;
-      flex-shrink: 0;
-    }
-    
-    .sidebar-nav > ul > li.collapsed > p::after {
-      transform: rotate(-90deg);
-    }
-    
-    .sidebar-nav > ul > li.collapsed > ul {
-      display: none;
-    }
-    
-    .sidebar-nav > ul > li > ul {
-      overflow: hidden;
-      transition: all 0.25s ease;
-    }
-
-    /* ========================================
-       SIDEBAR - ENLACES DEL MENÚ
-       ======================================== */
-    .sidebar-nav > ul > li > ul > li > a {
-      color: var(--gray-medium) !important;
-      padding: 11px 12px 11px 28px;
-      display: block;
-      border-radius: 8px;
-      transition: all 0.3s;
-      font-size: 14px;
-      font-weight: 500;
-      margin: 4px 0;
-    }
-    
-    .sidebar-nav > ul > li > ul > li > a:hover {
-      background: var(--red-light);
-      color: var(--red-primary) !important;
-      padding-left: 32px;
-      transform: translateX(4px);
-    }
-    
-    .sidebar-nav > ul > li > ul > li > a.active {
-      background: var(--red-lighter);
-      color: var(--red-primary) !important;
-      font-weight: 700;
-      padding-left: 28px;
-    }
-    
-    .sidebar-nav i {
-      margin-right: 10px;
-      font-size: 17px;
-    }
-
-    /* ========================================
-       BOTÓN HAMBURGUESA (solo móvil)
-       ======================================== */
-    button.sidebar-toggle,
-    .sidebar-toggle-button,
-    .sidebar-toggle {
-      width: 35px !important;
-      height: 35px !important;
-      min-width: 35px !important;
-      max-width: 35px !important;
-      min-height: 35px !important;
-      max-height: 35px !important;
-      background-color: var(--red-primary) !important;
-      background: var(--red-primary) !important;
-      border: none !important;
-      border-radius: 6px !important;
-      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3) !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      display: none !important;
-      align-items: center !important;
-      justify-content: center !important;
-      position: fixed !important;
-      top: 12px !important;
-      left: 12px !important;
-      z-index: 1001 !important;
-      cursor: pointer !important;
-      outline: none !important;
-      flex-direction: column !important;
-      gap: 3px !important;
-    }
-    
-    button.sidebar-toggle:hover,
-    .sidebar-toggle-button:hover,
-    .sidebar-toggle:hover {
-      background-color: var(--red-dark) !important;
-      background: var(--red-dark) !important;
-    }
-    
-    button.sidebar-toggle span,
-    .sidebar-toggle-button span,
-    .sidebar-toggle span {
-      width: 18px !important;
-      height: 2px !important;
-      background-color: white !important;
-      background: white !important;
-      display: block !important;
-      position: static !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: none !important;
-    }
-    
-    /* Ocultar pseudo-elementos si existen */
-    button.sidebar-toggle span::before,
-    button.sidebar-toggle span::after,
-    .sidebar-toggle-button span::before,
-    .sidebar-toggle-button span::after,
-    .sidebar-toggle span::before,
-    .sidebar-toggle span::after {
-      display: none !important;
-      content: none !important;
-    }
-    
-    /* Crear las tres líneas como elementos hermanos */
-    button.sidebar-toggle::before,
-    .sidebar-toggle::before {
-      content: '' !important;
-      width: 18px !important;
-      height: 2px !important;
-      background: white !important;
-      display: block !important;
-      position: absolute !important;
-      top: 10px !important;
-      left: 8.5px !important;
-    }
-    
-    button.sidebar-toggle::after,
-    .sidebar-toggle::after {
-      content: '' !important;
-      width: 18px !important;
-      height: 2px !important;
-      background: white !important;
-      display: block !important;
-      position: absolute !important;
-      bottom: 10px !important;
-      left: 8.5px !important;
-    }
-
-    /* ========================================
-       BÚSQUEDA
-       ======================================== */
-    .search input {
-      border: 2px solid #e0e0e0;
-      border-radius: 5px;
-    }
-
-    /* ========================================
-       PDF VIEWER
-       ======================================== */
-    .pdf-container {
-      width: 100%;
-      min-height: 600px;
-      margin: 20px 0;
-    }
-    
-    .pdf-viewer {
-      width: 100%;
-      height: 800px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    
-    .pdf-fallback {
-      background: #f5f5f5;
-      padding: 30px;
-      text-align: center;
-      border-radius: 8px;
-      border: 2px dashed #ddd;
-    }
-    
-    .pdf-fallback h3 {
-      color: var(--theme-color);
-      margin-bottom: 20px;
-    }
-    
-    .pdf-fallback a {
-      display: inline-block;
-      background: var(--theme-color);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 5px;
-      text-decoration: none;
-      margin: 10px;
-      font-weight: bold;
-      transition: opacity 0.3s;
-    }
-    
-    .pdf-fallback a:hover {
-      opacity: 0.8;
-    }
-
-    /* ========================================
-       TARJETAS DE PROCEDIMIENTOS
-       ======================================== */
-    .procedure-card {
-      background: #f5f5f5;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border-left: 4px solid var(--theme-color);
-    }
-
-    /* ========================================
-       UTILIDADES
-       ======================================== */
-    .content .sidebar-nav {
-      display: none !important;
-    }
-
-    /* ========================================
-       RESPONSIVE - MÓVIL
-       ======================================== */
-    @media screen and (max-width: 768px) {
-      /* Mostrar botón hamburguesa en móvil */
-      button.sidebar-toggle,
-      .sidebar-toggle-button,
-      .sidebar-toggle {
-        display: flex !important;
-      }
-
-      .sidebar {
-        font-size: 14px;
-        transform: translateX(-300px);
-        transition: transform 0.3s ease;
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        z-index: 1000;
-        box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-        overflow-y: auto;
-      }
-
-      body.sidebar-open .sidebar {
-        transform: translateX(0);
-      }
-
-      .content {
-        margin-left: 0 !important;
-        padding-top: 80px !important;
-        padding-left: 15px !important;
-        padding-right: 15px !important;
-      }
-
-      .app-nav {
-        left: 0 !important;
-      }
-
-      .pdf-viewer {
-        height: 500px;
-      }
-      
-      .pdf-fallback a {
-        display: block;
-        margin: 10px 0;
-      }
-    }
-
-    /* Ocultar botón hamburguesa en desktop */
-    @media screen and (min-width: 769px) {
-      button.sidebar-toggle,
-      .sidebar-toggle-button,
-      .sidebar-toggle {
-        display: none !important;
-      }
-    }
-  </style>
 </head>
 <body>
   <div id="app">Cargando...</div>
-  
+
+  <!-- ─────────────────────────────────────
+       CONFIGURACIÓN DOCSIFY
+  ───────────────────────────────────────── -->
   <script>
     window.$docsify = {
       name: '<i class="bi bi-journal-bookmark-fill"></i> Diccionario de Procedimientos',
@@ -432,14 +44,12 @@
       auto2top: true,
       executeScript: true,
       maxLevel: 4,
-      
-      // Desactivar el índice automático del contenido
+
       toc: {
         tocMaxLevel: 0,
         target: 'h2'
       },
-      
-      // Búsqueda
+
       search: {
         maxAge: 86400000,
         paths: 'auto',
@@ -448,28 +58,25 @@
         depth: 6,
         hideOtherSidebarContent: false,
       },
-      
-      // Paginación
+
       pagination: {
         previousText: 'Anterior',
         nextText: 'Siguiente',
       },
-      
-      // Copiar código
+
       copyCode: {
         buttonText: 'Copiar',
         errorText: 'Error',
         successText: '✓ Copiado'
       },
-      
-      // Alias para evitar problemas con rutas
+
       alias: {
         '/.*/_sidebar.md': '/_sidebar.md',
       },
-      
-      // Plugins
+
       plugins: [
-        // ===== CERRAR MODAL AL CAMBIAR DE PÁGINA =====
+
+        // Cerrar modal PDF al cambiar de página
         function(hook) {
           hook.beforeEach(function(content) {
             var modal = document.getElementById('pdf-modal');
@@ -483,7 +90,7 @@
           });
         },
 
-        // ===== PLUGIN MENÚ COLAPSABLE =====
+        // Menú colapsable del sidebar
         function(hook) {
           hook.doneEach(function() {
             setTimeout(function() {
@@ -496,7 +103,6 @@
 
                 if (!p || !ul) return;
 
-                // Bind click solo una vez
                 if (!p.getAttribute('data-collapsible')) {
                   p.setAttribute('data-collapsible', 'true');
                   p.addEventListener('click', function() {
@@ -504,7 +110,6 @@
                   });
                 }
 
-                // Verificar si algún link hijo coincide con la URL actual
                 var links = li.querySelectorAll('a');
                 var tieneActivo = false;
                 links.forEach(function(a) {
@@ -515,106 +120,60 @@
                 });
 
                 if (tieneActivo) {
-                  // Mantener abierto si un hijo coincide con la URL
                   li.classList.remove('collapsed');
                 } else {
-                  // Si no tiene hijo activo y no estaba ya abierto por click, colapsar
                   if (!li.getAttribute('data-opened')) {
                     li.classList.add('collapsed');
                   }
                 }
               });
-
             }, 50);
           });
         }
+
       ]
     }
   </script>
-  
-  <!-- Docsify core -->
+
+  <!-- ─────────────────────────────────────
+       DOCSIFY + PLUGINS
+  ───────────────────────────────────────── -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
-  
-  <!-- Plugin de búsqueda -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-  
-  <!-- Plugin de zoom para imágenes -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
-  
-  <!-- Plugin de copiar código -->
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
-  
-  <!-- Plugin de paginación -->
   <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
-  
-  <!-- Soporte para PDF -->
   <script src="//cdn.jsdelivr.net/npm/pdfobject@2.2.8/pdfobject.min.js"></script>
 
-  <!-- Responsive: toggle sidebar en móvil -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var toggle = document.querySelector('.sidebar-toggle');
-      if (!toggle) return;
+  <!-- ─────────────────────────────────────
+       SIDEBAR TOGGLE (móvil)
+  ───────────────────────────────────────── -->
+  <script src="/sidebar.js"></script>
 
-      toggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.body.classList.toggle('sidebar-open');
-      });
+  <!-- ─────────────────────────────────────
+       MODAL PDF
+  ───────────────────────────────────────── -->
+  <script src="/pdf-modal.js"></script>
 
-      // Cerrar al hacer click en el overlay
-      document.addEventListener('click', function(e) {
-        if (document.body.classList.contains('sidebar-open')) {
-          var sidebar = document.querySelector('.sidebar');
-          if (sidebar && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
-            document.body.classList.remove('sidebar-open');
-          }
-        }
-      });
-
-      // Cerrar al navegar a otra página
-      document.querySelector('.sidebar-nav') && document.querySelector('.sidebar-nav').addEventListener('click', function(e) {
-        if (e.target.tagName === 'A' && window.innerWidth <= 768) {
-          document.body.classList.remove('sidebar-open');
-        }
-      });
-    });
-  </script>
-
-  <!-- Funciones globales modal PDF -->
-  <script>
-    function openPreview(url, title) {
-      var modal = document.getElementById("pdf-modal");
-      if (!modal) return;
-      document.getElementById("modal-title").textContent = title;
-      document.getElementById("modal-iframe").src = url;
-      modal.classList.add("active");
-      document.body.style.overflow = "hidden";
-    }
-    function closeModal() {
-      var modal = document.getElementById("pdf-modal");
-      if (!modal) return;
-      modal.classList.remove("active");
-      document.getElementById("modal-iframe").src = "";
-      document.body.style.overflow = "";
-    }
-    function closePreview(event) {
-      if (event.target === document.getElementById("pdf-modal")) closeModal();
-    }
-  </script>
-  
-  <!-- Sistema de autenticación -->
+  <!-- ─────────────────────────────────────
+       AUTENTICACIÓN
+  ───────────────────────────────────────── -->
   <script src="/auth.js"></script>
-  
-  <!-- Tour interactivo -->
+
+  <!-- ─────────────────────────────────────
+       TOUR INTERACTIVO
+  ───────────────────────────────────────── -->
   <script src="/tour.js"></script>
-  
-  <!-- Botón flotante para reiniciar tour -->
+
+  <!-- Botón flotante tour -->
   <button class="btn-start-tour" onclick="startTour()" title="Iniciar guía interactiva">
     <i class="bi bi-question-circle"></i>
   </button>
-  
-  <!-- Bootstrap JS -->
+
+  <!-- ─────────────────────────────────────
+       BOOTSTRAP JS
+  ───────────────────────────────────────── -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
+
 </body>
 </html>
