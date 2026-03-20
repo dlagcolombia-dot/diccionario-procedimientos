@@ -8,7 +8,7 @@ cloudinary.config({
 
 async function checkCloudinary() {
   try {
-    console.log('\n☁️  VERIFICANDO CLOUDINARY:\n');
+    console.log('\n  VERIFICANDO CLOUDINARY:\n');
     
     // Listar archivos en la carpeta diccionario
     const result = await cloudinary.api.resources({
