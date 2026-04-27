@@ -147,6 +147,7 @@
     
     grid.innerHTML = docs.map(function(d) {
       var isFav = isFavorite(d.id);
+      
       return '<div class="col-md-6 col-lg-4">' +
         '<div class="doc-card">' +
           '<div class="doc-card-header">' +

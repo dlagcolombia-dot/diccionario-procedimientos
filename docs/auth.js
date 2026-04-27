@@ -16,9 +16,28 @@ function getUser() {
   return userStr ? JSON.parse(userStr) : null;
 }
 
+// Obtener rol del usuario
+function getUserRole() {
+  const user = getUser();
+  return user ? user.role : 'visitante';
+}
+
 // Verificar si está autenticado
 function isAuthenticated() {
   return !!getAuthToken();
+}
+
+// Verificar permisos según rol
+function hasPermission(action) {
+  const role = getUserRole();
+  
+  const permissions = {
+    visitante: ['view'],
+    colaborador: ['view', 'download', 'upload', 'favorite'],
+    admin: ['view', 'download', 'upload', 'favorite', 'delete']
+  };
+  
+  return permissions[role]?.includes(action) || false;
 }
 
 // Cerrar sesión
@@ -64,30 +83,46 @@ async function authenticatedFetch(url, options = {}) {
   return response;
 }
 
-// Mostrar/ocultar botones según autenticación
+// Mostrar/ocultar botones según autenticación y rol
 function updateUIForAuth() {
   const isAuth = isAuthenticated();
   const user = getUser();
+  const role = getUserRole();
   
-  // Mostrar/ocultar botones de agregar
-  const addButtons = document.querySelectorAll('.btn-add-document');
+  // Ocultar botones de agregar si no tiene permiso
+  const addButtons = document.querySelectorAll('[onclick*="toggle"]');
   addButtons.forEach(btn => {
-    btn.style.display = isAuth ? 'inline-block' : 'none';
+    if (btn.textContent.includes('Agregar')) {
+      btn.style.display = hasPermission('upload') ? 'inline-block' : 'none';
+    }
   });
   
-  // Agregar botón de logout si está autenticado
+  // Ocultar botones de descargar si no tiene permiso
+  const downloadButtons = document.querySelectorAll('.btn-download');
+  downloadButtons.forEach(btn => {
+    if (!hasPermission('download')) {
+      btn.style.display = 'none';
+    }
+  });
+  
+  // Agregar botón de logout/login
   if (isAuth && user) {
-    addLogoutButton(user);
+    addLogoutButton(user, role);
   } else {
-    // Agregar botón de login si NO está autenticado
     addLoginButton();
   }
 }
 
 // Agregar botón de logout
-function addLogoutButton(user) {
+function addLogoutButton(user, role) {
   // Verificar si ya existe
   if (document.getElementById('auth-info')) return;
+  
+  const roleLabels = {
+    admin: '👑 Admin',
+    colaborador: '👤 Colaborador',
+    visitante: '👁️ Visitante'
+  };
   
   const authInfo = document.createElement('div');
   authInfo.id = 'auth-info';
@@ -107,7 +142,7 @@ function addLogoutButton(user) {
   `;
   
   authInfo.innerHTML = `
-    <span style="color: #374151; font-weight: 600;">👤 ${user.username}</span>
+    <span style="color: #374151; font-weight: 600;">${roleLabels[role] || '👤'} ${user.username}</span>
     <button onclick="logout()" style="
       background: #dc2626;
       color: white;
@@ -172,6 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
 window.auth = {
   getAuthToken,
   getUser,
+  getUserRole,
+  hasPermission,
   isAuthenticated,
   logout,
   requireAuth,

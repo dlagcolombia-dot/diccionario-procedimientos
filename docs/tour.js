@@ -2,31 +2,31 @@
 (function() {
   var tourSteps = [
     {
-      title: '¡Bienvenido al Diccionario de Procedimientos! 👋',
+      title: '¡Bienvenido al Diccionario de Procedimientos! ',
       content: 'Te voy a mostrar cómo usar esta plataforma en solo 4 pasos.',
       target: null,
       position: 'center'
     },
     {
-      title: 'Menú de navegación 📁',
+      title: 'Menú de navegación ',
       content: 'Aquí encontrarás todas las secciones: Actas, Manuales, Procedimientos, Glosarios y más. Haz clic en cualquier sección para explorar.',
       target: '.sidebar',
       position: 'right'
     },
     {
-      title: 'Búsqueda rápida 🔍',
+      title: 'Búsqueda rápida ',
       content: 'Usa Ctrl + K en cualquier momento para buscar documentos rápidamente. También puedes usar la barra de búsqueda en cada sección.',
       target: '.search',
       position: 'bottom'
     },
     {
-      title: 'Favoritos ⭐',
+      title: 'Favoritos ',
       content: 'Marca documentos importantes como favoritos haciendo clic en la estrella. Podrás filtrarlos después para acceso rápido.',
       target: null,
       position: 'center'
     },
     {
-      title: '¡Listo para empezar! 🎉',
+      title: '¡Listo para empezar! ',
       content: 'Ya conoces lo básico. Explora la plataforma y si necesitas ayuda, revisa la sección "Cómo usar".',
       target: null,
       position: 'center'

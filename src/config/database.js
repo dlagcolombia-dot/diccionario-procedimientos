@@ -1,6 +1,5 @@
 const { MongoClient } = require('mongodb');
 
-// Cadena de conexión de MongoDB
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://marialopezal205_db_user:dZQacIBNuZaGufl5@cluster0.stpe2yy.mongodb.net/?appName=Cluster0';
 const DB_NAME = 'diccionario';
 
