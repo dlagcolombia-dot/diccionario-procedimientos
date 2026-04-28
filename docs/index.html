@@ -8,29 +8,16 @@
   <meta name="description" content="Sistema unificado de procedimientos y automatizaciones">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📚</text></svg>">
 
-  <!-- Tema -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
-
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-
-  <!-- Mejoras responsive -->
   <link rel="stylesheet" href="/responsive-fixes.css">
-
-  <!-- Tour CSS -->
   <link rel="stylesheet" href="/tour.css">
 
   <style>
-    /* ========================================
-       VARIABLES GLOBALES
-       ======================================== */
     :root {
       --theme-color: #2c3e50;
       --sidebar-width: 300px;
@@ -45,9 +32,7 @@
       --red-lighter: #fecaca;
     }
 
-    /* ========================================
-       BOTONES BOOTSTRAP (COLORES CORPORATIVOS)
-       ======================================== */
+    /* ===== BOOTSTRAP OVERRIDES ===== */
     .btn-primary {
       background-color: var(--red-primary) !important;
       border-color: var(--red-primary) !important;
@@ -93,9 +78,7 @@
       border-color: #dee2e6;
     }
 
-    /* ========================================
-       SIDEBAR - ESTILOS GENERALES
-       ======================================== */
+    /* ===== SIDEBAR ===== */
     .sidebar {
       background: white !important;
       border-right: 1px solid #e5e7eb;
@@ -121,9 +104,6 @@
       font-size: 22px;
     }
 
-    /* ========================================
-       SIDEBAR - MENÚ COLAPSABLE
-       ======================================== */
     .sidebar-nav>ul>li>p {
       color: var(--gray-dark) !important;
       font-weight: 700;
@@ -171,9 +151,6 @@
       transition: all 0.25s ease;
     }
 
-    /* ========================================
-       SIDEBAR - ENLACES DEL MENÚ
-       ======================================== */
     .sidebar-nav>ul>li>ul>li>a {
       color: var(--gray-medium) !important;
       padding: 11px 12px 11px 28px;
@@ -196,7 +173,6 @@
       background: var(--red-lighter);
       color: var(--red-primary) !important;
       font-weight: 700;
-      padding-left: 28px;
     }
 
     .sidebar-nav i {
@@ -204,9 +180,7 @@
       font-size: 17px;
     }
 
-    /* ========================================
-       BOTÓN HAMBURGUESA (solo móvil)
-       ======================================== */
+    /* ===== HAMBURGER ===== */
     button.sidebar-toggle,
     .sidebar-toggle-button,
     .sidebar-toggle {
@@ -237,19 +211,15 @@
     }
 
     button.sidebar-toggle:hover,
-    .sidebar-toggle-button:hover,
     .sidebar-toggle:hover {
       background-color: var(--red-dark) !important;
-      background: var(--red-dark) !important;
     }
 
     button.sidebar-toggle span,
-    .sidebar-toggle-button span,
     .sidebar-toggle span {
       width: 18px !important;
       height: 2px !important;
       background-color: white !important;
-      background: white !important;
       display: block !important;
       position: static !important;
       margin: 0 !important;
@@ -259,8 +229,6 @@
 
     button.sidebar-toggle span::before,
     button.sidebar-toggle span::after,
-    .sidebar-toggle-button span::before,
-    .sidebar-toggle-button span::after,
     .sidebar-toggle span::before,
     .sidebar-toggle span::after {
       display: none !important;
@@ -291,17 +259,13 @@
       left: 8.5px !important;
     }
 
-    /* ========================================
-       BÚSQUEDA
-       ======================================== */
+    /* ===== SEARCH ===== */
     .search input {
       border: 2px solid #e0e0e0;
       border-radius: 5px;
     }
 
-    /* ========================================
-       PDF VIEWER
-       ======================================== */
+    /* ===== PDF VIEWER ===== */
     .pdf-container {
       width: 100%;
       min-height: 600px;
@@ -344,9 +308,6 @@
       opacity: 0.8;
     }
 
-    /* ========================================
-       TARJETAS DE PROCEDIMIENTOS
-       ======================================== */
     .procedure-card {
       background: #f5f5f5;
       padding: 15px;
@@ -355,16 +316,11 @@
       border-left: 4px solid var(--theme-color);
     }
 
-    /* ========================================
-       UTILIDADES
-       ======================================== */
     .content .sidebar-nav {
       display: none !important;
     }
 
-    /* ========================================
-       HOME PAGE STYLES
-       ======================================== */
+    /* ===== HOME PAGE ===== */
     .page-header {
       text-align: center;
       margin-bottom: 50px;
@@ -632,65 +588,137 @@
       will-change: transform;
     }
 
+    /* Tarjetas corporativas */
     .carousel-card {
       flex: 0 0 calc(25% - 12px);
-      padding: 28px 22px;
-      border-radius: 12px;
-      color: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 14px;
+      padding: 24px 20px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       box-sizing: border-box;
+      border: 1.5px solid #e5e7eb;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .carousel-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
     }
 
-    .card-emoji {
-      font-size: 40px;
-      margin-bottom: 14px;
+    .cc-white {
+      background: #ffffff;
+      border-left: 4px solid #dc2626;
     }
 
-    .card-title {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      line-height: 1.3;
+    .cc-gray {
+      background: #f3f4f6;
+      border-left: 4px solid #dc2626;
     }
 
-    .card-title span {
+    .cc-red {
+      background: #fee2e2;
+      border-left: 4px solid #b91c1c;
+    }
+
+    .cc-top {
+      background: #ffffff;
+      border-top: 4px solid #dc2626;
+      border-left: 1.5px solid #e5e7eb;
+    }
+
+    .cc-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: #fff;
       font-weight: 800;
+      font-size: 0.78rem;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .cc-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+
+    .cc-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .cc-icon-red {
+      background: #dc2626;
+    }
+
+    .cc-icon-dark {
+      background: #1f2937;
+    }
+
+    .cc-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.3;
+      color: #1f2937;
+    }
+
+    .cc-title span {
       display: block;
+      font-weight: 800;
+      font-size: 16px;
+      color: #dc2626;
     }
 
-    .card-desc {
-      font-size: 13px;
-      margin-bottom: 14px;
-      opacity: 0.95;
+    .cc-desc {
+      font-size: 12px;
+      color: #4b5563;
       line-height: 1.5;
+      margin: 0;
     }
 
-    .card-points {
+    .cc-list {
       list-style: none;
       padding: 0;
       margin: 0;
       font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
     }
 
-    .card-points li {
-      margin-bottom: 8px;
-      padding-left: 18px;
+    .cc-red .cc-list {
+      border-top-color: #fecaca;
+    }
+
+    .cc-list li {
+      padding-left: 16px;
       position: relative;
+      color: #4b5563;
       line-height: 1.4;
-      opacity: 0.9;
     }
 
-    .card-points li:before {
+    .cc-list li::before {
       content: "✓";
       position: absolute;
       left: 0;
-      font-weight: bold;
+      font-weight: 700;
+      color: #dc2626;
     }
 
     .carousel-nav {
@@ -741,9 +769,7 @@
       border-radius: 5px;
     }
 
-    /* ========================================
-       RESPONSIVE - MÓVIL
-       ======================================== */
+    /* ===== RESPONSIVE ===== */
     @media (max-width: 900px) {
       .carousel-card {
         flex: 0 0 calc(50% - 8px);
@@ -846,75 +872,60 @@
 <body>
   <div id="app">Cargando...</div>
 
-  <!-- ============================================================
-       FUNCIONES GLOBALES: HOME HTML + STATS + CAROUSEL
-       ============================================================ -->
   <script>
-    /* ---------- HTML de la home ---------- */
     function getHomeHTML() {
       return '\
 <div class="page-header">\
-  <h1 class="page-title">\
-    <i class="bi bi-journal-bookmark-fill"></i>\
-    Diccionario de Procedimientos\
-  </h1>\
+  <h1 class="page-title"><i class="bi bi-journal-bookmark-fill"></i>Diccionario de Procedimientos</h1>\
   <p class="page-subtitle">Sistema unificado de documentación del Área de Innovación</p>\
 </div>\
 \
 <div class="stats-section">\
-  <div class="stat-card">\
-    <i class="bi bi-book-fill stat-icon"></i>\
-    <div class="stat-number" id="stat-manuales">-</div>\
-    <div class="stat-label">Manuales</div>\
-  </div>\
-  <div class="stat-card">\
-    <i class="bi bi-file-earmark-text-fill stat-icon"></i>\
-    <div class="stat-number" id="stat-actas">-</div>\
-    <div class="stat-label">Actas</div>\
-  </div>\
-  <div class="stat-card">\
-    <i class="bi bi-list-check stat-icon"></i>\
-    <div class="stat-number" id="stat-procedimientos">-</div>\
-    <div class="stat-label">Procedimientos</div>\
-  </div>\
+  <div class="stat-card"><i class="bi bi-book-fill stat-icon"></i><div class="stat-number" id="stat-manuales">-</div><div class="stat-label">Manuales</div></div>\
+  <div class="stat-card"><i class="bi bi-file-earmark-text-fill stat-icon"></i><div class="stat-number" id="stat-actas">-</div><div class="stat-label">Actas</div></div>\
+  <div class="stat-card"><i class="bi bi-list-check stat-icon"></i><div class="stat-number" id="stat-procedimientos">-</div><div class="stat-label">Procedimientos</div></div>\
 </div>\
 \
 <div class="ownership-carousel-wrapper">\
   <div class="carousel-header">\
-    <h2 class="carousel-title">🔴 Ownership - Nuestros Pilares</h2>\
+    <h2 class="carousel-title"><span style="display:inline-block;width:13px;height:13px;background:#dc2626;border-radius:50%;margin-right:8px;vertical-align:middle;"></span>Ownership - Nuestros Pilares</h2>\
     <p class="carousel-subtitle">Descubre los valores que nos definen</p>\
   </div>\
   <div class="carousel-flex-container">\
-    <button class="carousel-nav carousel-nav-prev" id="carouselPrev">&#8249;</button>\
+    <button class="carousel-nav" id="carouselPrev">&#8249;</button>\
     <div class="carousel-cards-container">\
       <div class="carousel-cards-wrapper" id="carouselWrapper">\
-        <div class="carousel-card" style="background:linear-gradient(135deg,#dc2626 0%,#ef4444 100%)">\
-          <div class="card-emoji">💪</div>\
-          <h3 class="card-title">Tomo iniciativa<br><span>Si es conmigo</span></h3>\
-          <p class="card-desc">Me hago cargo y gestiono lo necesario.</p>\
-          <ul class="card-points"><li>Es una ACTITUD</li><li>Disposición genuina</li><li>"Si el negocio lo necesita, es conmigo"</li></ul>\
+        <div class="carousel-card cc-white">\
+          <div class="cc-badge">1</div>\
+          <div class="cc-icon cc-icon-red"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>\
+          <p class="cc-title">Tomo iniciativa<span>Si es conmigo</span></p>\
+          <p class="cc-desc">Me hago cargo y gestiono lo necesario, incluso fuera de mi zona conocida.</p>\
+          <ul class="cc-list"><li>Es una ACTITUD</li><li>Disposición genuina</li><li>"Si el negocio lo necesita, es conmigo"</li></ul>\
         </div>\
-        <div class="carousel-card" style="background:linear-gradient(135deg,#2563eb 0%,#3b82f6 100%)">\
-          <div class="card-emoji">🎯</div>\
-          <h3 class="card-title">Comprendo objetivos<br><span>comunes</span></h3>\
-          <p class="card-desc">Entiendo y asumo la responsabilidad total.</p>\
-          <ul class="card-points"><li>Hago parte de procesos</li><li>Responsabilidad hasta éxito</li><li>Conozco bien el terreno</li></ul>\
+        <div class="carousel-card cc-gray">\
+          <div class="cc-badge">2</div>\
+          <div class="cc-icon cc-icon-dark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8l4 4-4 4M8 12h8"/></svg></div>\
+          <p class="cc-title">Comprendo objetivos<span>comunes</span></p>\
+          <p class="cc-desc">Entiendo, asumo y llevo el objetivo hasta el final con responsabilidad total.</p>\
+          <ul class="cc-list"><li>Hago parte de procesos</li><li>Responsabilidad hasta el éxito</li><li>Conozco bien el terreno</li></ul>\
         </div>\
-        <div class="carousel-card" style="background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%)">\
-          <div class="card-emoji">🧠</div>\
-          <h3 class="card-title">Tomo decisiones<br><span>con coraje</span></h3>\
-          <p class="card-desc">Considero riesgos e impactos conscientemente.</p>\
-          <ul class="card-points"><li>Decido sin esconderme</li><li>Priorizo lo correcto</li><li>Asumo la decisión</li></ul>\
+        <div class="carousel-card cc-red">\
+          <div class="cc-badge">3</div>\
+          <div class="cc-icon cc-icon-red"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>\
+          <p class="cc-title">Tomo decisiones<span>con coraje</span></p>\
+          <p class="cc-desc">Considero riesgos e impactos. No busco la solución rápida, sino la correcta.</p>\
+          <ul class="cc-list"><li>Decido sin esconderme</li><li>Priorizo lo correcto</li><li>Asumo la decisión</li></ul>\
         </div>\
-        <div class="carousel-card" style="background:linear-gradient(135deg,#f59e0b 0%,#fbbf24 100%)">\
-          <div class="card-emoji">⭐</div>\
-          <h3 class="card-title">Me exijo y mejoro<br><span>cada día</span></h3>\
-          <p class="card-desc">Elevo estándar y busco calidad.</p>\
-          <ul class="card-points"><li>Calidad sobre cantidad</li><li>Desarrollo continuo</li><li>Elimino desperdicios</li></ul>\
+        <div class="carousel-card cc-top">\
+          <div class="cc-badge">4</div>\
+          <div class="cc-icon cc-icon-dark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>\
+          <p class="cc-title">Me exijo y mejoro<span>cada día</span></p>\
+          <p class="cc-desc">Elevo el estándar. Calidad sobre cantidad. Aprendo del error y evoluciono.</p>\
+          <ul class="cc-list"><li>Calidad sobre cantidad</li><li>Desarrollo continuo</li><li>Elimino desperdicios</li></ul>\
         </div>\
       </div>\
     </div>\
-    <button class="carousel-nav carousel-nav-next" id="carouselNext">&#8250;</button>\
+    <button class="carousel-nav" id="carouselNext">&#8250;</button>\
   </div>\
   <div class="carousel-indicators" id="carouselIndicators">\
     <button class="indicator active" data-slide="0"></button>\
@@ -951,13 +962,11 @@
 </div>';
     }
 
-    /* ---------- Detectar si estamos en home ---------- */
     function isHome() {
       var h = window.location.hash;
       return h === '' || h === '#' || h === '#/' || h === '#/README';
     }
 
-    /* ---------- Cargar stats del backend ---------- */
     function loadStats() {
       var API_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:3001'
@@ -973,20 +982,17 @@
         el = document.getElementById('stat-procedimientos'); if (el) el.textContent = results[2].length;
       }).catch(function () {
         ['stat-manuales', 'stat-actas', 'stat-procedimientos'].forEach(function (id) {
-          var el = document.getElementById(id);
-          if (el) el.textContent = '0';
+          var el = document.getElementById(id); if (el) el.textContent = '0';
         });
       });
     }
 
-    /* ---------- Inicializar carousel ---------- */
     function initCarousel() {
       var wrapper = document.getElementById('carouselWrapper');
       var container = wrapper ? wrapper.parentElement : null;
       var indicators = document.querySelectorAll('.indicator');
       var prevBtn = document.getElementById('carouselPrev');
       var nextBtn = document.getElementById('carouselNext');
-
       if (!wrapper || !prevBtn || !nextBtn || !container) return;
 
       var currentIndex = 0;
@@ -998,32 +1004,21 @@
         if (w < 900) return 2;
         return 4;
       }
-
       function getCardWidth() {
-        var gap = 16;
-        var visible = getVisibleCount();
-        return (container.offsetWidth - gap * (visible - 1)) / visible + gap;
+        var gap = 16, v = getVisibleCount();
+        return (container.offsetWidth - gap * (v - 1)) / v + gap;
       }
-
-      function maxIndex() {
-        return Math.max(0, totalCards - getVisibleCount());
-      }
+      function maxIndex() { return Math.max(0, totalCards - getVisibleCount()); }
 
       function updateCarousel() {
         wrapper.style.transform = 'translateX(-' + (currentIndex * getCardWidth()) + 'px)';
-        indicators.forEach(function (btn, i) {
-          btn.classList.toggle('active', i === currentIndex);
-        });
+        indicators.forEach(function (btn, i) { btn.classList.toggle('active', i === currentIndex); });
         prevBtn.style.opacity = currentIndex === 0 ? '0.4' : '1';
         nextBtn.style.opacity = currentIndex >= maxIndex() ? '0.4' : '1';
       }
 
-      prevBtn.addEventListener('click', function () {
-        if (currentIndex > 0) { currentIndex--; updateCarousel(); }
-      });
-      nextBtn.addEventListener('click', function () {
-        if (currentIndex < maxIndex()) { currentIndex++; updateCarousel(); }
-      });
+      prevBtn.addEventListener('click', function () { if (currentIndex > 0) { currentIndex--; updateCarousel(); } });
+      nextBtn.addEventListener('click', function () { if (currentIndex < maxIndex()) { currentIndex++; updateCarousel(); } });
       indicators.forEach(function (btn) {
         btn.addEventListener('click', function () {
           currentIndex = Math.min(parseInt(btn.dataset.slide), maxIndex());
@@ -1034,14 +1029,10 @@
         currentIndex = Math.min(currentIndex, maxIndex());
         updateCarousel();
       });
-
       updateCarousel();
     }
   </script>
 
-  <!-- ============================================================
-       DOCSIFY CONFIG
-       ============================================================ -->
   <script>
     window.$docsify = {
       name: '<i class="bi bi-journal-bookmark-fill"></i> Diccionario de Procedimientos',
@@ -1052,39 +1043,13 @@
       auto2top: true,
       executeScript: true,
       maxLevel: 4,
-
-      toc: {
-        tocMaxLevel: 0,
-        target: 'h2'
-      },
-
-      search: {
-        maxAge: 86400000,
-        paths: 'auto',
-        placeholder: '🔍 Buscar procedimientos...',
-        noData: 'No se encontraron resultados',
-        depth: 6,
-        hideOtherSidebarContent: false,
-      },
-
-      pagination: {
-        previousText: 'Anterior',
-        nextText: 'Siguiente',
-      },
-
-      copyCode: {
-        buttonText: 'Copiar',
-        errorText: 'Error',
-        successText: '✓ Copiado'
-      },
-
-      alias: {
-        '/.*/_sidebar.md': '/_sidebar.md',
-      },
+      toc: { tocMaxLevel: 0, target: 'h2' },
+      search: { maxAge: 86400000, paths: 'auto', placeholder: '🔍 Buscar procedimientos...', noData: 'No se encontraron resultados', depth: 6, hideOtherSidebarContent: false },
+      pagination: { previousText: 'Anterior', nextText: 'Siguiente' },
+      copyCode: { buttonText: 'Copiar', errorText: 'Error', successText: '✓ Copiado' },
+      alias: { '/.*/_sidebar.md': '/_sidebar.md' },
 
       plugins: [
-
-        /* ===== PLUGIN 1: CERRAR MODAL AL CAMBIAR DE PÁGINA ===== */
         function (hook) {
           hook.beforeEach(function (content) {
             var modal = document.getElementById('pdf-modal');
@@ -1098,84 +1063,51 @@
           });
         },
 
-        /* ===== PLUGIN 2: INYECTAR HOME PAGE ===== */
         function (hook) {
-          /* beforeEach: si es home, devolvemos un marcador vacío
-             para que Docsify no intente renderizar el README como MD */
           hook.beforeEach(function (content) {
-            if (isHome()) {
-              return '<div id="home-placeholder"></div>';
-            }
+            if (isHome()) return '<div id="home-placeholder"></div>';
             return content;
           });
-
-          /* afterEach: reemplazamos el placeholder por el HTML real */
           hook.afterEach(function (html, next) {
-            if (isHome()) {
-              next(getHomeHTML());
-            } else {
-              next(html);
-            }
+            if (isHome()) { next(getHomeHTML()); } else { next(html); }
           });
-
-          /* doneEach: una vez el DOM está listo, arrancamos stats y carousel */
           hook.doneEach(function () {
             if (isHome()) {
               loadStats();
-              /* Pequeño delay para asegurar que el DOM ya pintó el carousel */
               setTimeout(initCarousel, 50);
             }
           });
         },
 
-        /* ===== PLUGIN 3: MENÚ COLAPSABLE ===== */
         function (hook) {
           hook.doneEach(function () {
             setTimeout(function () {
               var currentHash = window.location.hash || '';
               var topItems = document.querySelectorAll('.sidebar-nav > ul > li');
-
               topItems.forEach(function (li) {
                 var p = li.querySelector(':scope > p');
                 var ul = li.querySelector(':scope > ul');
-
                 if (!p || !ul) return;
-
                 if (!p.getAttribute('data-collapsible')) {
                   p.setAttribute('data-collapsible', 'true');
-                  p.addEventListener('click', function () {
-                    li.classList.toggle('collapsed');
-                  });
+                  p.addEventListener('click', function () { li.classList.toggle('collapsed'); });
                 }
-
                 var links = li.querySelectorAll('a');
                 var tieneActivo = false;
                 links.forEach(function (a) {
                   var href = a.getAttribute('href') || '';
-                  if (currentHash.indexOf(href.replace(/^#/, '')) !== -1 && href.length > 2) {
-                    tieneActivo = true;
-                  }
+                  if (currentHash.indexOf(href.replace(/^#/, '')) !== -1 && href.length > 2) tieneActivo = true;
                 });
-
-                if (tieneActivo) {
-                  li.classList.remove('collapsed');
-                } else {
-                  if (!li.getAttribute('data-opened')) {
-                    li.classList.add('collapsed');
-                  }
-                }
+                if (tieneActivo) { li.classList.remove('collapsed'); }
+                else { if (!li.getAttribute('data-opened')) li.classList.add('collapsed'); }
               });
             }, 50);
           });
         }
-
-      ] // fin plugins
+      ]
     };
   </script>
 
-  <!-- ============================================================
-       DOCSIFY Y PLUGINS
-       ============================================================ -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
@@ -1183,42 +1115,26 @@
   <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/pdfobject@2.2.8/pdfobject.min.js"></script>
 
-  <!-- ============================================================
-       RESPONSIVE: TOGGLE SIDEBAR EN MÓVIL
-       ============================================================ -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       var toggle = document.querySelector('.sidebar-toggle');
       if (!toggle) return;
-
-      toggle.addEventListener('click', function (e) {
-        e.stopPropagation();
-        document.body.classList.toggle('sidebar-open');
-      });
-
+      toggle.addEventListener('click', function (e) { e.stopPropagation(); document.body.classList.toggle('sidebar-open'); });
       document.addEventListener('click', function (e) {
         if (document.body.classList.contains('sidebar-open')) {
           var sidebar = document.querySelector('.sidebar');
-          if (sidebar && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
-            document.body.classList.remove('sidebar-open');
-          }
+          if (sidebar && !sidebar.contains(e.target) && !toggle.contains(e.target)) document.body.classList.remove('sidebar-open');
         }
       });
-
       var sidebarNav = document.querySelector('.sidebar-nav');
       if (sidebarNav) {
         sidebarNav.addEventListener('click', function (e) {
-          if (e.target.tagName === 'A' && window.innerWidth <= 768) {
-            document.body.classList.remove('sidebar-open');
-          }
+          if (e.target.tagName === 'A' && window.innerWidth <= 768) document.body.classList.remove('sidebar-open');
         });
       }
     });
   </script>
 
-  <!-- ============================================================
-       FUNCIONES GLOBALES MODAL PDF
-       ============================================================ -->
   <script>
     function openPreview(url, title) {
       var modal = document.getElementById('pdf-modal');
@@ -1240,20 +1156,12 @@
     }
   </script>
 
-  <!-- Sistema de autenticación -->
   <script src="/auth.js"></script>
-
-  <!-- Tour interactivo -->
   <script src="/tour.js"></script>
-
-  <!-- Botón flotante para reiniciar tour -->
   <button class="btn-start-tour" onclick="startTour()" title="Iniciar guía interactiva">
     <i class="bi bi-question-circle"></i>
   </button>
-
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>
