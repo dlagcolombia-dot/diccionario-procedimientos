@@ -1,0 +1,50 @@
+# Dependencias
+node_modules/
+package-lock.json
+yarn.lock
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Construcción
+dist/
+build/
+.next/
+
+# Base de datos
+*.db
+*.sqlite
+*.sqlite3
+
+# Cloudinary config y credenciales
+config/cloudinary.js (si contiene credenciales)
+.cloudinaryrc
+
+# Archivos temporales
+tmp/
+temp/
+.cache/
