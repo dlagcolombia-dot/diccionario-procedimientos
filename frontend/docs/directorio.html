@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directorio de Páginas — Diccionario de Procedimientos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 40px;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+      color: #1f2937;
+      font-size: 32px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header p {
+      color: #6b7280;
+      font-size: 16px;
+    }
+
+    .search-box {
+      background: white;
+      padding: 20px 40px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-box input {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .content {
+      background: white;
+      padding: 40px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .category {
+      margin-bottom: 40px;
+    }
+
+    .category-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #667eea;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-icon {
+      font-size: 24px;
+    }
+
+    .page-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fafafa;
+      transition: all 0.3s;
+    }
+
+    .page-item:hover {
+      background: #f0f9ff;
+      border-color: #667eea;
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .page-info {
+      flex: 1;
+    }
+
+    .page-name {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .page-link {
+      font-size: 12px;
+      color: #667eea;
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+    }
+
+    .page-description {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: 16px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-visit {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-visit:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .btn-copy {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-copy:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-copy.copied {
+      background: #10b981;
+      color: white;
+    }
+
+    .footer {
+      background: white;
+      padding: 20px 40px;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+
+    .no-results i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .page-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-actions {
+        margin-left: 0;
+        margin-top: 12px;
+        width: 100%;
+      }
+
+      .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .header {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <i class="bi bi-building"></i>
+        Directorio de Páginas
+      </h1>
+      <p>Índice centralizado de todos los sitios y aplicaciones disponibles</p>
+    </div>
+
+    <div class="search-box">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="🔍 Buscar página, descripción o link..." 
+        onkeyup="filterPages()"
+      >
+    </div>
+
+    <div class="content">
+      <div id="pagesContainer"></div>
+      <div id="noResults" class="no-results" style="display: none;">
+        <i class="bi bi-search"></i>
+        <p>No se encontraron páginas con ese criterio</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>© 2026 — Directorio centralizado de la empresa</p>
+    </div>
+  </div>
+
+  <script>
+    // Base de datos de páginas
+    const PAGES_DATABASE = {
+      'Internas': [
+        {
+          name: 'Inicio — Diccionario',
+          link: 'http://localhost:3001/',
+          description: 'Página principal del diccionario de procedimientos'
+        },
+        {
+          name: 'Iniciar Sesión',
+          link: 'http://localhost:3001/login.html',
+          description: 'Panel de autenticación del sistema'
+        },
+        {
+          name: 'Documentación',
+          link: 'http://localhost:3001/#/README.md',
+          description: 'Guía general y readme del proyecto'
+        }
+      ],
+      'Procedimientos': [
+        {
+          name: 'Actas',
+          link: 'http://localhost:3001/#/informacionSec/actas.md',
+          description: 'Actas y documentos oficiales'
+        },
+        {
+          name: 'Manuales',
+          link: 'http://localhost:3001/#/informacionSec/manuales.md',
+          description: 'Manuales y guías de usuario'
+        },
+        {
+          name: 'Procedimientos por Área',
+          link: 'http://localhost:3001/#/informacionSec/procedimientos_area.md',
+          description: 'Procedimientos organizados por área'
+        }
+      ],
+      'Información': [
+        {
+          name: 'Glosario General',
+          link: 'http://localhost:3001/#/informacionSec/glosario.md',
+          description: 'Términos y definiciones del sistema'
+        },
+        {
+          name: 'Glosario Institucional',
+          link: 'http://localhost:3001/#/informacionSec/glosario_institucional.md',
+          description: 'Diccionario de términos institucionables'
+        },
+        {
+          name: 'Cómo Usar',
+          link: 'http://localhost:3001/#/informacionSec/comousar.md',
+          description: 'Guía paso a paso de uso del sistema'
+        },
+        {
+          name: 'Ventajas',
+          link: 'http://localhost:3001/#/informacionSec/ventajas.md',
+          description: 'Beneficios y ventajas del sistema'
+        }
+      ],
+      'Administración': [
+        {
+          name: 'Área de Innovación',
+          link: 'http://localhost:3001/#/informacionSec/area_innovacion.md',
+          description: 'Iniciativas y proyectos de innovación'
+        },
+        {
+          name: 'Actualizaciones',
+          link: 'http://localhost:3001/#/informacionSec/actualizaciones.md',
+          description: 'Registro de cambios y versiones del sistema'
+        }
+      ]
+    };
+
+    // Renderizar páginas
+    function renderPages(dataToRender = PAGES_DATABASE) {
+      const container = document.getElementById('pagesContainer');
+      const noResults = document.getElementById('noResults');
+      
+      let html = '';
+      let totalPages = 0;
+
+      Object.entries(dataToRender).forEach(([category, pages]) => {
+        if (pages.length === 0) return;
+        totalPages += pages.length;
+
+        const categoryIcons = {
+          'Internas': '🔒',
+          'Procedimientos': '⚙️',
+          'Información': 'ℹ️',
+          'Administración': '👨‍💼'
+        };
+
+        html += `
+          <div class="category">
+            <div class="category-title">
+              <span class="category-icon">${categoryIcons[category] || '📄'}</span>
+              ${category}
+            </div>
+        `;
+
+        pages.forEach(page => {
+          html += `
+            <div class="page-item">
+              <div class="page-info">
+                <div class="page-name">${page.name}</div>
+                <div class="page-link">🔗 ${page.link}</div>
+                <div class="page-description">${page.description}</div>
+              </div>
+              <div class="page-actions">
+                <button class="btn btn-visit" onclick="openPage('${page.link}')">
+                  <i class="bi bi-box-arrow-up-right"></i> Visitar
+                </button>
+                <button class="btn btn-copy" onclick="copyLink(this, '${page.link}')">
+                  <i class="bi bi-clipboard"></i> Copiar
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+      noResults.style.display = totalPages === 0 ? 'block' : 'none';
+    }
+
+    // Filtrar páginas
+    function filterPages() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (!searchTerm) {
+        renderPages(PAGES_DATABASE);
+        return;
+      }
+
+      const filtered = {};
+
+      Object.entries(PAGES_DATABASE).forEach(([category, pages]) => {
+        filtered[category] = pages.filter(page => 
+          page.name.toLowerCase().includes(searchTerm) ||
+          page.link.toLowerCase().includes(searchTerm) ||
+          page.description.toLowerCase().includes(searchTerm)
+        );
+      });
+
+      renderPages(filtered);
+    }
+
+    // Abrir página
+    function openPage(url) {
+      window.open(url, '_blank');
+    }
+
+    // Copiar link
+    function copyLink(btn, link) {
+      navigator.clipboard.writeText(link).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check-lg"></i> ¡Copiado!';
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Renderizar al cargar
+    renderPages();
+  </script>
+</body>
+</html>
