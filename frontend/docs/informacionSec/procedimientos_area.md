@@ -1,4 +1,3 @@
-git log --oneline -10
 # <i class="bi bi-list-check"></i> Procedimientos
 
 <div class="container-fluid px-0">

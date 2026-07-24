@@ -15,40 +15,6 @@
     </div>
   </div>
 
-  <!-- Proponer nuevo término -->
-  <div id="glosario-form-container" class="card border-0 shadow-sm mb-4" style="display:none;">
-    <div class="card-body">
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <i class="bi bi-plus-circle-fill text-danger fs-4"></i>
-        <h5 class="mb-0">Agregar una palabra nueva al glosario</h5>
-      </div>
-      <p class="text-muted mb-3">Si conoces un término que falta, puedes proponerlo aquí para que lo añadamos al diccionario.</p>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <input type="text" id="nuevo-termino" class="form-control" placeholder="Ej. API Gateway" />
-        </div>
-        <div class="col-md-4">
-          <input type="text" id="nueva-definicion" class="form-control" placeholder="Definición breve" />
-        </div>
-        <div class="col-md-4">
-          <select id="nueva-categoria" class="form-select">
-            <option value="frontend">Frontend</option>
-            <option value="backend">Backend</option>
-            <option value="arquitectura">Arquitectura</option>
-            <option value="basedatos">Base de Datos</option>
-            <option value="automatizacion">Automatización</option>
-            <option value="versiones">Versiones</option>
-            <option value="gestion">Gestión</option>
-          </select>
-        </div>
-      </div>
-      <div class="mt-3 d-flex gap-2">
-        <button class="btn btn-danger" onclick="agregarTerminoGlosario()">Enviar propuesta</button>
-        <span id="msg-glosario" class="align-self-center text-success" style="display:none"></span>
-      </div>
-    </div>
-  </div>
-
   <!-- Categorías -->
   <div class="mb-4">
     <div class="d-flex flex-wrap gap-2" id="cats-tec">
@@ -226,102 +192,9 @@ mark {
     renderTec(terminosTec, q);
   };
 
-  window.agregarTerminoGlosario = function() {
-    var termino = document.getElementById('nuevo-termino').value.trim();
-    var definicion = document.getElementById('nueva-definicion').value.trim();
-    var categoria = document.getElementById('nueva-categoria').value;
-    var msg = document.getElementById('msg-glosario');
-
-    if (!termino || !definicion) {
-      if (msg) {
-        msg.textContent = 'Completa el término y la definición para enviar la propuesta.';
-        msg.style.display = 'inline-block';
-        msg.className = 'align-self-center text-danger';
-      }
-      return;
-    }
-
-    if (!window.auth || !window.auth.isAuthenticated()) {
-      if (msg) {
-        msg.textContent = 'Debes iniciar sesión para enviar una propuesta.';
-        msg.style.display = 'inline-block';
-        msg.className = 'align-self-center text-danger';
-      }
-      return;
-    }
-
-    if (msg) {
-      msg.textContent = 'Enviando propuesta...';
-      msg.style.display = 'inline-block';
-      msg.className = 'align-self-center text-muted';
-    }
-
-    var apiBase = window.auth && window.auth.API_URL ? window.auth.API_URL : '';
-    fetch(apiBase + '/api/glosario/propuestas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-      },
-      body: JSON.stringify({ termino: termino, definicion: definicion, categoria: categoria })
-    })
-    .then(function(response) {
-      var contentType = response.headers.get('content-type') || '';
-      return (contentType.includes('application/json')
-        ? response.json()
-        : response.text().then(function(text) {
-            return text ? { raw: text } : {};
-          })
-      ).then(function(data) {
-        if (!response.ok) {
-          throw new Error(data.error || data.raw || 'No se pudo guardar la propuesta');
-        }
-        return data;
-      });
-    })
-    .then(function() {
-      var nuevo = {
-        icon: '<i class="bi bi-journal-text text-danger"></i>',
-        titulo: termino,
-        cat: categoria,
-        catLabel: categoria === 'frontend' ? 'Frontend' : categoria === 'backend' ? 'Backend' : categoria === 'arquitectura' ? 'Arquitectura' : categoria === 'basedatos' ? 'Base de Datos' : categoria === 'automatizacion' ? 'Automatización' : categoria === 'versiones' ? 'Versiones' : 'Gestión',
-        desc: definicion
-      };
-
-      terminosTec.push(nuevo);
-      document.getElementById('nuevo-termino').value = '';
-      document.getElementById('nueva-definicion').value = '';
-      document.getElementById('nueva-categoria').value = 'frontend';
-
-      if (msg) {
-        msg.textContent = '¡Propuesta enviada! Gracias por ayudar a enriquecer el glosario.';
-        msg.style.display = 'inline-block';
-        msg.className = 'align-self-center text-success';
-      }
-
-      var q = document.getElementById('search-tec').value.trim().toLowerCase();
-      renderTec(terminosTec, q);
-    })
-    .catch(function(error) {
-      if (msg) {
-        msg.textContent = error.message;
-        msg.style.display = 'inline-block';
-        msg.className = 'align-self-center text-danger';
-      }
-    });
-  };
-
   function init() {
     var grid = document.getElementById('grid-tec');
-    var formContainer = document.getElementById('glosario-form-container');
-    if (grid) {
-      renderTec(terminosTec, '');
-      if (formContainer && window.auth && window.auth.isAuthenticated()) {
-        formContainer.style.display = 'block';
-      } else if (formContainer) {
-        formContainer.style.display = 'none';
-      }
-    }
+    if (grid) { renderTec(terminosTec, ''); }
     else { setTimeout(init, 200); }
   }
   init();

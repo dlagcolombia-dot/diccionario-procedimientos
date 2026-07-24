@@ -332,96 +332,13 @@
 })();
 </script>
 
-<!-- Modal de Vista Previa con error amigable -->
-<div id="preview-modal-manuales" class="preview-modal" onclick="closePreviewManuales(event)">
-  <div class="preview-modal-content">
-    <div class="preview-modal-header">
-      <h3 id="preview-title-manuales"></h3>
-      <button class="preview-close-btn" onclick="closePreviewManuales()">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    <div class="preview-modal-body">
-      <div id="pdf-error-manuales" style="display:none; padding:60px 40px; text-align:center;">
-        <div style="font-size:64px; margin-bottom:16px;">📄</div>
-        <h4 style="color:#1f2937; margin-bottom:8px;">No se pudo cargar el PDF</h4>
-        <p style="color:#6b7280; margin-bottom:24px; max-width:360px; margin-left:auto; margin-right:auto;">
-          El archivo puede estar cargando lentamente o no disponible en este momento.
-        </p>
-        <button class="btn btn-primary me-2" id="btn-retry-manuales">
-          <i class="bi bi-arrow-clockwise"></i> Reintentar
-        </button>
-        <a id="btn-open-manuales" href="#" target="_blank" class="btn btn-outline-secondary">
-          <i class="bi bi-box-arrow-up-right"></i> Abrir en otra pestaña
-        </a>
-      </div>
-      <iframe id="preview-iframe-manuales" frameborder="0"></iframe>
-    </div>
-  </div>
-</div>
-
 <script>
-var _currentPdfUrlManuales = '';
-
-function previewPDFManuales(url, title) {
-  _currentPdfUrlManuales = url;
-  var modal    = document.getElementById('preview-modal-manuales');
-  var iframe   = document.getElementById('preview-iframe-manuales');
-  var titleEl  = document.getElementById('preview-title-manuales');
-  var errorMsg = document.getElementById('pdf-error-manuales');
-  var btnOpen  = document.getElementById('btn-open-manuales');
-  var btnRetry = document.getElementById('btn-retry-manuales');
-
-  if (modal && iframe && titleEl) {
-    titleEl.textContent = title;
-    errorMsg.style.display = 'none';
-    iframe.style.display = 'block';
-    iframe.src = url;
-    btnOpen.href = url;
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-
-    clearTimeout(window._pdfTimeoutManuales);
-    window._pdfTimeoutManuales = setTimeout(function() {
-      if (iframe.style.display !== 'none') {
-        errorMsg.style.display = 'block';
-        iframe.style.display = 'none';
-      }
-    }, 12000);
-
-    btnRetry.onclick = function() {
-      errorMsg.style.display = 'none';
-      iframe.style.display = 'block';
-      iframe.src = '';
-      clearTimeout(window._pdfTimeoutManuales);
-      setTimeout(function() {
-        iframe.src = _currentPdfUrlManuales;
-        window._pdfTimeoutManuales = setTimeout(function() {
-          if (iframe.style.display !== 'none') {
-            errorMsg.style.display = 'block';
-            iframe.style.display = 'none';
-          }
-        }, 12000);
-      }, 100);
-    };
+function previewPDFManuales(url) {
+  if (url) {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
-
-function closePreviewManuales(event) {
-  if (!event || event.target.id === 'preview-modal-manuales' || event.type === 'click') {
-    var modal  = document.getElementById('preview-modal-manuales');
-    var iframe = document.getElementById('preview-iframe-manuales');
-    var errorMsg = document.getElementById('pdf-error-manuales');
-    clearTimeout(window._pdfTimeoutManuales);
-    if (modal)    { modal.classList.remove('active'); document.body.style.overflow = ''; }
-    if (iframe)   { iframe.style.display = 'block'; iframe.src = ''; }
-    if (errorMsg) { errorMsg.style.display = 'none'; }
-  }
-}
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closePreviewManuales();
-});
+window.previewPDFManuales = previewPDFManuales;
 </script>
 
 <style>

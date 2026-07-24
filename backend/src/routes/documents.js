@@ -1,13 +1,41 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const DocumentController = require('../controllers/documentController');
 const { requireAuth } = require('../middlewares/auth');
 const upload = require('../middlewares/upload');
 
 const router = express.Router();
+const glossaryFile = path.join(__dirname, '..', '..', 'data', 'glossary-proposals.json');
 
-router.get('/pdf-proxy', DocumentController.pdfProxy);
-router.get('/:modulo', DocumentController.getAll);
-router.post('/:modulo', requireAuth, upload.single('pdf'), DocumentController.create);
-router.delete('/:modulo/:id', requireAuth, DocumentController.delete);
+router.post('/glosario/propuestas', requireAuth, (req, res) => {
+  try {
+    const { termino, definicion, categoria } = req.body;
+
+    if (!termino || !definicion) {
+      return res.status(400).json({ error: 'El término y la definición son obligatorios' });
+    }
+
+    fs.mkdirSync(path.dirname(glossaryFile), { recursive: true });
+
+    let propuestas = [];
+    if (fs.existsSync(glossaryFile)) {
+      propuestas = JSON.parse(fs.readFileSync(glossaryFile, 'utf8'));
+    }
+
+    propuestas.push({
+      id: Date.now(),
+      termino,
+      definicion,
+      categoria: categoria || 'general',
+      fecha: new Date().toISOString()
+    });
+
+    fs.writeFileSync(glossaryFile, JSON.stringify(propuestas, null, 2));
+    res.status(201).json({ ok: true, propuesta: propuestas[propuestas.length - 1] });
+  } catch (error) {
+    res.status(500).json({ error: 'No se pudo guardar la propuesta' });
+  }
+});
 
 module.exports = router;

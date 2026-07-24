@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Sistema unificado de documentación de procedimientos y automatizaciones",
   "scripts": {
-    "dev": "docsify serve docs",
+    "dev": "docsify serve ../frontend/docs",
     "start": "node server.js",
     "convert": "python convert_pdfs.py",
     "pm2:start": "pm2 start ecosystem.config.js",

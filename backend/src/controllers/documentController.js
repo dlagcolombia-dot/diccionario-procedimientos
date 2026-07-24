@@ -41,7 +41,7 @@ class DocumentController {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: `diccionario/${modulo}`,
-          resource_type: 'image',
+          resource_type: 'raw',
           public_id: req.file.originalname.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9.\-_]/g, '').replace('.pdf', ''),
           format: 'pdf',
           access_mode: 'public',
@@ -54,10 +54,11 @@ class DocumentController {
           }
 
           const signedUrl = cloudinary.url(result.public_id, {
-            resource_type: 'image',
+            resource_type: 'raw',
             type: 'upload',
             sign_url: true,
-            secure: true
+            secure: true,
+            format: 'pdf'
           });
 
           const nuevoDoc = {
@@ -123,15 +124,6 @@ class DocumentController {
     }
   }
 
-  static pdfProxy(req, res) {
-    const { url } = req.query;
-    
-    if (!url) {
-      return res.status(400).json({ error: 'URL requerida' });
-    }
-    
-    res.redirect(url.replace('/upload/', '/upload/fl_attachment:false/'));
-  }
 }
 
 module.exports = DocumentController;

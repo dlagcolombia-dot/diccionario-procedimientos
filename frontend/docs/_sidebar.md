@@ -1,7 +1,8 @@
 <!-- _sidebar.md -->
 
 * [<i class="bi bi-house-door-fill"></i> Inicio](/)
-* [<i class="bi bi-building"></i> Directorio de Páginas](directorio.html)
+
+* [<i class="bi bi-link-45deg"></i> Enlaces Empresariales](enlaces.html)
 
 * <i class="bi bi-info-circle-fill"></i> Información General
   * [<i class="bi bi-star-fill"></i> Ventajas](informacionSec/ventajas.md)

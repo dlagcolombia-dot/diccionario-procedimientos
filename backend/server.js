@@ -26,6 +26,12 @@ const DATA_DIR = path.join(__dirname, 'data');
 app.use(corsMiddleware);
 app.use(cors());
 app.use(express.json());
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'El cuerpo de la solicitud no es un JSON válido' });
+  }
+  next(err);
+});
 app.use(session({
   secret: JWT_SECRET,
   resave: false,
