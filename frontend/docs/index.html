@@ -63,7 +63,6 @@
     button.sidebar-toggle::before, .sidebar-toggle::before { content: '' !important; width: 18px !important; height: 2px !important; background: white !important; display: block !important; position: absolute !important; top: 10px !important; left: 8.5px !important; }
     button.sidebar-toggle::after, .sidebar-toggle::after { content: '' !important; width: 18px !important; height: 2px !important; background: white !important; display: block !important; position: absolute !important; bottom: 10px !important; left: 8.5px !important; }
 
-    .search input { border: 2px solid #e0e0e0; border-radius: 5px; }
     .pdf-container { width: 100%; min-height: 600px; margin: 20px 0; }
     .pdf-viewer { width: 100%; height: 800px; border: 1px solid #ddd; border-radius: 5px; }
     .pdf-fallback { background: #f5f5f5; padding: 30px; text-align: center; border-radius: 8px; border: 2px dashed #ddd; }
@@ -294,7 +293,6 @@
       executeScript: true,
       maxLevel: 4,
       toc: { tocMaxLevel: 0, target: 'h2' },
-      search: { maxAge: 86400000, paths: 'auto', placeholder: 'Buscar procedimientos...', noData: 'No se encontraron resultados', depth: 6, hideOtherSidebarContent: false },
       pagination: { previousText: 'Anterior', nextText: 'Siguiente' },
       copyCode: { buttonText: 'Copiar', errorText: 'Error', successText: '✓ Copiado' },
       alias: {
@@ -359,7 +357,6 @@
   </script>
 
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
