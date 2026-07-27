@@ -43,6 +43,40 @@
     </div>
   </div>
 
+  <!-- Proponer nuevo término -->
+  <div id="inst-form-container" class="card border-0 shadow-sm mb-4" style="display:none;">
+    <div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-plus-circle-fill text-danger fs-4"></i>
+        <h5 class="mb-0">Agregar una palabra nueva al glosario</h5>
+      </div>
+      <p class="text-muted mb-3">Si conoces un término institucional que falta, puedes proponerlo aquí.</p>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <input type="text" id="inst-nuevo-termino" class="form-control" placeholder="Ej. NPS" />
+        </div>
+        <div class="col-md-4">
+          <input type="text" id="inst-nueva-definicion" class="form-control" placeholder="Definición breve" />
+        </div>
+        <div class="col-md-4">
+          <select id="inst-nueva-categoria" class="form-select">
+            <option value="comunicacion">Comunicación</option>
+            <option value="operativa">Operativa</option>
+            <option value="kpis">KPIs</option>
+            <option value="tecnologias">Tecnologías</option>
+            <option value="campo">Campo</option>
+            <option value="sistemas">Sistemas</option>
+            <option value="geografico">Geográfico</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-3 d-flex gap-2">
+        <button class="btn btn-danger" onclick="agregarTerminoInst()">Enviar propuesta</button>
+        <span id="msg-inst" class="align-self-center text-success" style="display:none"></span>
+      </div>
+    </div>
+  </div>
+
   <!-- Grid de términos -->
   <div id="grid-inst" class="row g-3"></div>
   
@@ -103,6 +137,57 @@ mark {
   border-radius: 3px;
   font-weight: 600;
 }
+
+.glosario-admin-btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn-glosario-edit {
+  flex: 1; padding: 4px 8px; font-size: 0.75rem; border: none;
+  border-radius: 6px; background: #f0f9ff; color: #0369a1;
+  cursor: pointer; font-weight: 600; transition: background 0.2s;
+}
+.btn-glosario-edit:hover { background: #bae6fd; }
+
+.btn-glosario-delete {
+  flex: 1; padding: 4px 8px; font-size: 0.75rem; border: none;
+  border-radius: 6px; background: #fff0f0; color: #dc2626;
+  cursor: pointer; font-weight: 600; transition: background 0.2s;
+}
+.btn-glosario-delete:hover { background: #fecaca; }
+
+.glosario-edit-form {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid #f3f4f6;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.glosario-edit-form input, .glosario-edit-form textarea {
+  font-size: 0.8rem; padding: 5px 8px; border: 1px solid #d1d5db;
+  border-radius: 6px; width: 100%;
+}
+.glosario-edit-form textarea { resize: vertical; min-height: 60px; }
+.glosario-edit-actions { display: flex; gap: 6px; }
+.btn-glosario-save {
+  flex: 1; padding: 4px 8px; font-size: 0.75rem; border: none;
+  border-radius: 6px; background: #dcfce7; color: #16a34a;
+  cursor: pointer; font-weight: 600;
+}
+.btn-glosario-save:hover { background: #bbf7d0; }
+.btn-glosario-cancel {
+  flex: 1; padding: 4px 8px; font-size: 0.75rem; border: none;
+  border-radius: 6px; background: #f3f4f6; color: #6b7280;
+  cursor: pointer; font-weight: 600;
+}
+.btn-glosario-cancel:hover { background: #e5e7eb; }
+
+@media (max-width: 768px) {
+  .glosario-card:hover { transform: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important; }
+  #inst-form-container .row > div { margin-bottom: 8px; }
+  .glosario-icon { width: 46px; height: 46px; }
+}
 </style>
 
 <script>
@@ -142,6 +227,7 @@ mark {
     { icon:'<i class="bi bi-shop text-success"></i>', titulo:'Pymes / Soho', cat:'geografico', catLabel:'Geográfico', desc:'<strong>Pymes:</strong> Pequeñas y medianas empresas. <strong>Soho:</strong> Small Office/Home Office, negocios de barrio.' }
   ];
 
+  var isAdminInst = false;
   var catActualInst = 'todos';
 
   function renderInst(terminos, busqueda) {
@@ -149,7 +235,8 @@ mark {
     var empty = document.getElementById('empty-inst');
     if (!grid) return;
 
-    var filtrados = terminos.filter(function(t) {
+    var filtrados = terminos.map(function(t, i) { return { t: t, i: i }; }).filter(function(obj) {
+      var t = obj.t;
       var matchCat = catActualInst === 'todos' || t.cat === catActualInst;
       var matchQ   = !busqueda || t.titulo.toLowerCase().includes(busqueda) || t.desc.toLowerCase().includes(busqueda);
       return matchCat && matchQ;
@@ -162,15 +249,28 @@ mark {
     }
     empty.style.display = 'none';
 
-    grid.innerHTML = filtrados.map(function(t) {
+    grid.innerHTML = filtrados.map(function(obj) {
+      var t = obj.t; var idx = obj.i;
       var titulo = busqueda ? t.titulo.replace(new RegExp('(' + busqueda + ')', 'gi'), '<mark>$1</mark>') : t.titulo;
+      var adminBtns = isAdminInst ? (
+        '<div class="glosario-admin-btns">' +
+          '<button class="btn-glosario-edit" onclick="editarTerminoInst(' + idx + ')"><i class="bi bi-pencil"></i> Editar</button>' +
+          '<button class="btn-glosario-delete" onclick="eliminarTerminoInst(' + idx + ')"><i class="bi bi-trash"></i> Eliminar</button>' +
+        '</div>' +
+        '<div class="glosario-edit-form" id="edit-inst-' + idx + '" style="display:none;">' +
+          '<input type="text" id="edit-inst-titulo-' + idx + '" value="' + t.titulo.replace(/"/g, '&quot;') + '" placeholder="Término" />' +
+          '<textarea id="edit-inst-desc-' + idx + '" placeholder="Descripción">' + t.desc.replace(/<[^>]+>/g, '') + '</textarea>' +
+          '<div class="glosario-edit-actions">' +
+            '<button class="btn-glosario-save" onclick="guardarEdicionInst(' + idx + ')"><i class="bi bi-check-lg"></i> Guardar</button>' +
+            '<button class="btn-glosario-cancel" onclick="cancelarEdicionInst(' + idx + ')">Cancelar</button>' +
+          '</div>' +
+        '</div>'
+      ) : '';
       return '<div class="col-md-6 col-lg-4">' +
         '<div class="card h-100 border-0 shadow-sm glosario-card">' +
           '<div class="card-header border-0 glosario-header">' +
             '<div class="d-flex align-items-center gap-3">' +
-              '<div class="glosario-icon">' +
-                '<span class="fs-1">' + t.icon + '</span>' +
-              '</div>' +
+              '<div class="glosario-icon"><span class="fs-1">' + t.icon + '</span></div>' +
               '<div class="flex-grow-1">' +
                 '<h6 class="mb-1 fw-bold">' + titulo + '</h6>' +
                 '<small class="text-danger text-uppercase fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">' + t.catLabel + '</small>' +
@@ -179,11 +279,52 @@ mark {
           '</div>' +
           '<div class="card-body">' +
             '<p class="card-text text-muted mb-0" style="font-size: 0.9rem; line-height: 1.6;">' + t.desc + '</p>' +
+            adminBtns +
           '</div>' +
         '</div>' +
       '</div>';
     }).join('');
   }
+
+  window.editarTerminoInst = function(idx) {
+    var form = document.getElementById('edit-inst-' + idx);
+    if (form) form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+  };
+
+  window.cancelarEdicionInst = function(idx) {
+    var form = document.getElementById('edit-inst-' + idx);
+    if (form) form.style.display = 'none';
+  };
+
+  window.guardarEdicionInst = function(idx) {
+    var nuevoTitulo = document.getElementById('edit-inst-titulo-' + idx).value.trim();
+    var nuevaDesc   = document.getElementById('edit-inst-desc-' + idx).value.trim();
+    if (!nuevoTitulo || !nuevaDesc) return;
+    terminosInst[idx].titulo = nuevoTitulo;
+    terminosInst[idx].desc   = nuevaDesc;
+    var baseCount = terminosInst.length - JSON.parse(localStorage.getItem('glosario_inst_extra') || '[]').length;
+    if (idx >= baseCount) {
+      var extras = JSON.parse(localStorage.getItem('glosario_inst_extra') || '[]');
+      var extraIdx = idx - baseCount;
+      if (extras[extraIdx]) { extras[extraIdx].titulo = nuevoTitulo; extras[extraIdx].desc = nuevaDesc; }
+      localStorage.setItem('glosario_inst_extra', JSON.stringify(extras));
+    }
+    var q = document.getElementById('search-inst').value.trim().toLowerCase();
+    renderInst(terminosInst, q);
+  };
+
+  window.eliminarTerminoInst = function(idx) {
+    if (!confirm('¿Eliminar "' + terminosInst[idx].titulo + '"?')) return;
+    var baseCount = terminosInst.length - JSON.parse(localStorage.getItem('glosario_inst_extra') || '[]').length;
+    if (idx >= baseCount) {
+      var extras = JSON.parse(localStorage.getItem('glosario_inst_extra') || '[]');
+      extras.splice(idx - baseCount, 1);
+      localStorage.setItem('glosario_inst_extra', JSON.stringify(extras));
+    }
+    terminosInst.splice(idx, 1);
+    var q = document.getElementById('search-inst').value.trim().toLowerCase();
+    renderInst(terminosInst, q);
+  };
 
   window.filtrarInst = function() {
     var q = document.getElementById('search-inst').value.trim().toLowerCase();
@@ -198,10 +339,69 @@ mark {
     renderInst(terminosInst, q);
   };
 
+  window.agregarTerminoInst = function() {
+    var termino = document.getElementById('inst-nuevo-termino').value.trim();
+    var definicion = document.getElementById('inst-nueva-definicion').value.trim();
+    var categoria = document.getElementById('inst-nueva-categoria').value;
+    var msg = document.getElementById('msg-inst');
+
+    if (!termino || !definicion) {
+      if (msg) { msg.textContent = 'Completa el término y la definición.'; msg.style.display = 'inline-block'; msg.className = 'align-self-center text-danger'; }
+      return;
+    }
+    if (!window.auth || !window.auth.isAuthenticated()) {
+      if (msg) { msg.textContent = 'Debes iniciar sesión para enviar una propuesta.'; msg.style.display = 'inline-block'; msg.className = 'align-self-center text-danger'; }
+      return;
+    }
+    if (msg) { msg.textContent = 'Enviando propuesta...'; msg.style.display = 'inline-block'; msg.className = 'align-self-center text-muted'; }
+
+    var catLabels = { comunicacion:'Comunicación', operativa:'Operativa', kpis:'KPIs', tecnologias:'Tecnologías', campo:'Campo', sistemas:'Sistemas', geografico:'Geográfico' };
+    var nuevo = { icon:'<i class="bi bi-journal-text text-danger"></i>', titulo: termino, cat: categoria, catLabel: catLabels[categoria] || categoria, desc: definicion };
+
+    // Guardar en localStorage para persistencia
+    var guardados = JSON.parse(localStorage.getItem('glosario_inst_extra') || '[]');
+    guardados.push(nuevo);
+    localStorage.setItem('glosario_inst_extra', JSON.stringify(guardados));
+    terminosInst.push(nuevo);
+
+    document.getElementById('inst-nuevo-termino').value = '';
+    document.getElementById('inst-nueva-definicion').value = '';
+    document.getElementById('inst-nueva-categoria').value = 'comunicacion';
+    if (msg) { msg.textContent = '¡Término agregado!'; msg.style.display = 'inline-block'; msg.className = 'align-self-center text-success'; }
+
+    var apiBase = window.auth && window.auth.API_URL ? window.auth.API_URL : '';
+    fetch(apiBase + '/api/glosario/propuestas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('authToken') },
+      body: JSON.stringify({ termino: termino, definicion: definicion, categoria: categoria, tipo: 'institucional' })
+    }).catch(function() {}); // silencioso si el backend falla
+
+    var q = document.getElementById('search-inst').value.trim().toLowerCase();
+    renderInst(terminosInst, q);
+  };
+
   function init() {
     var grid = document.getElementById('grid-inst');
-    if (grid) { renderInst(terminosInst, ''); }
-    else { setTimeout(init, 200); }
+    var formContainer = document.getElementById('inst-form-container');
+    if (!grid) { setTimeout(init, 200); return; }
+
+    // Cargar términos extra guardados en localStorage
+    var extra = JSON.parse(localStorage.getItem('glosario_inst_extra') || '[]');
+    extra.forEach(function(t) { terminosInst.push(t); });
+    renderInst(terminosInst, '');
+
+    // Esperar a que auth.js esté listo para mostrar/ocultar el form
+    function checkAuth() {
+      if (window.auth) {
+        var autenticado = window.auth.isAuthenticated();
+        isAdminInst = autenticado && window.auth.getUserRole() === 'admin';
+        if (formContainer) formContainer.style.display = autenticado ? 'block' : 'none';
+        if (isAdminInst) renderInst(terminosInst, '');
+      } else {
+        setTimeout(checkAuth, 150);
+      }
+    }
+    checkAuth();
   }
   init();
 })();

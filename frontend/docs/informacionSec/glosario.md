@@ -131,11 +131,76 @@
   color: #b91c1c !important;
 }
 
-mark {
-  background-color: #fef08a;
-  padding: 2px 4px;
-  border-radius: 3px;
+.glosario-admin-btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn-glosario-edit {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: #f0f9ff;
+  color: #0369a1;
+  cursor: pointer;
   font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-glosario-edit:hover { background: #bae6fd; }
+
+.btn-glosario-delete {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: #fff0f0;
+  color: #dc2626;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-glosario-delete:hover { background: #fecaca; }
+
+.glosario-edit-form {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.glosario-edit-form input, .glosario-edit-form textarea {
+  font-size: 0.8rem;
+  padding: 5px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  width: 100%;
+}
+.glosario-edit-form textarea { resize: vertical; min-height: 60px; }
+.glosario-edit-actions { display: flex; gap: 6px; }
+.btn-glosario-save {
+  flex: 1; padding: 4px 8px; font-size: 0.75rem; border: none;
+  border-radius: 6px; background: #dcfce7; color: #16a34a;
+  cursor: pointer; font-weight: 600; transition: background 0.2s;
+}
+.btn-glosario-save:hover { background: #bbf7d0; }
+.btn-glosario-cancel {
+  flex: 1; padding: 4px 8px; font-size: 0.75rem; border: none;
+  border-radius: 6px; background: #f3f4f6; color: #6b7280;
+  cursor: pointer; font-weight: 600; transition: background 0.2s;
+}
+.btn-glosario-cancel:hover { background: #e5e7eb; }
+
+@media (max-width: 768px) {
+  .glosario-card:hover { transform: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important; }
+  #glosario-form-container .row > div { margin-bottom: 8px; }
+  .glosario-icon { width: 46px; height: 46px; }
 }
 </style>
 
@@ -170,6 +235,7 @@ mark {
     { icon:'<i class="bi bi-ubuntu text-warning"></i>', titulo:'Linux', cat:'gestion', catLabel:'Gestión', desc:'El <strong>corazón (Kernel)</strong> del sistema operativo. Gratis, seguro y en todas partes: desde Android hasta servidores de la NASA.' }
   ];
 
+  var isAdmin = false;
   var catActualTec = 'todos';
 
   function renderTec(terminos, busqueda) {
@@ -177,7 +243,8 @@ mark {
     var empty = document.getElementById('empty-tec');
     if (!grid) return;
 
-    var filtrados = terminos.filter(function(t) {
+    var filtrados = terminos.map(function(t, i) { return { t: t, i: i }; }).filter(function(obj) {
+      var t = obj.t;
       var matchCat = catActualTec === 'todos' || t.cat === catActualTec;
       var matchQ   = !busqueda || t.titulo.toLowerCase().includes(busqueda) || t.desc.toLowerCase().includes(busqueda);
       return matchCat && matchQ;
@@ -190,15 +257,28 @@ mark {
     }
     empty.style.display = 'none';
 
-    grid.innerHTML = filtrados.map(function(t) {
+    grid.innerHTML = filtrados.map(function(obj) {
+      var t = obj.t; var idx = obj.i;
       var titulo = busqueda ? t.titulo.replace(new RegExp('(' + busqueda + ')', 'gi'), '<mark>$1</mark>') : t.titulo;
+      var adminBtns = isAdmin ? (
+        '<div class="glosario-admin-btns">' +
+          '<button class="btn-glosario-edit" onclick="editarTerminoTec(' + idx + ')"><i class="bi bi-pencil"></i> Editar</button>' +
+          '<button class="btn-glosario-delete" onclick="eliminarTerminoTec(' + idx + ')"><i class="bi bi-trash"></i> Eliminar</button>' +
+        '</div>' +
+        '<div class="glosario-edit-form" id="edit-tec-' + idx + '" style="display:none;">' +
+          '<input type="text" id="edit-tec-titulo-' + idx + '" value="' + t.titulo.replace(/"/g, '&quot;') + '" placeholder="Término" />' +
+          '<textarea id="edit-tec-desc-' + idx + '" placeholder="Descripción">' + t.desc.replace(/<[^>]+>/g, '') + '</textarea>' +
+          '<div class="glosario-edit-actions">' +
+            '<button class="btn-glosario-save" onclick="guardarEdicionTec(' + idx + ')"><i class="bi bi-check-lg"></i> Guardar</button>' +
+            '<button class="btn-glosario-cancel" onclick="cancelarEdicionTec(' + idx + ')">Cancelar</button>' +
+          '</div>' +
+        '</div>'
+      ) : '';
       return '<div class="col-md-6 col-lg-4">' +
         '<div class="card h-100 border-0 shadow-sm glosario-card">' +
           '<div class="card-header border-0 glosario-header">' +
             '<div class="d-flex align-items-center gap-3">' +
-              '<div class="glosario-icon">' +
-                '<span class="fs-1">' + t.icon + '</span>' +
-              '</div>' +
+              '<div class="glosario-icon"><span class="fs-1">' + t.icon + '</span></div>' +
               '<div class="flex-grow-1">' +
                 '<h6 class="mb-1 fw-bold">' + titulo + '</h6>' +
                 '<small class="text-danger text-uppercase fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">' + t.catLabel + '</small>' +
@@ -207,11 +287,53 @@ mark {
           '</div>' +
           '<div class="card-body">' +
             '<p class="card-text text-muted mb-0" style="font-size: 0.9rem; line-height: 1.6;">' + t.desc + '</p>' +
+            adminBtns +
           '</div>' +
         '</div>' +
       '</div>';
     }).join('');
   }
+
+  window.editarTerminoTec = function(idx) {
+    var form = document.getElementById('edit-tec-' + idx);
+    if (form) form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+  };
+
+  window.cancelarEdicionTec = function(idx) {
+    var form = document.getElementById('edit-tec-' + idx);
+    if (form) form.style.display = 'none';
+  };
+
+  window.guardarEdicionTec = function(idx) {
+    var nuevoTitulo = document.getElementById('edit-tec-titulo-' + idx).value.trim();
+    var nuevaDesc   = document.getElementById('edit-tec-desc-' + idx).value.trim();
+    if (!nuevoTitulo || !nuevaDesc) return;
+    terminosTec[idx].titulo = nuevoTitulo;
+    terminosTec[idx].desc   = nuevaDesc;
+    // Sincronizar en localStorage si es un término extra
+    var baseCount = terminosTec.length - JSON.parse(localStorage.getItem('glosario_tec_extra') || '[]').length;
+    if (idx >= baseCount) {
+      var extras = JSON.parse(localStorage.getItem('glosario_tec_extra') || '[]');
+      var extraIdx = idx - baseCount;
+      if (extras[extraIdx]) { extras[extraIdx].titulo = nuevoTitulo; extras[extraIdx].desc = nuevaDesc; }
+      localStorage.setItem('glosario_tec_extra', JSON.stringify(extras));
+    }
+    var q = document.getElementById('search-tec').value.trim().toLowerCase();
+    renderTec(terminosTec, q);
+  };
+
+  window.eliminarTerminoTec = function(idx) {
+    if (!confirm('¿Eliminar "' + terminosTec[idx].titulo + '"?')) return;
+    var baseCount = terminosTec.length - JSON.parse(localStorage.getItem('glosario_tec_extra') || '[]').length;
+    if (idx >= baseCount) {
+      var extras = JSON.parse(localStorage.getItem('glosario_tec_extra') || '[]');
+      extras.splice(idx - baseCount, 1);
+      localStorage.setItem('glosario_tec_extra', JSON.stringify(extras));
+    }
+    terminosTec.splice(idx, 1);
+    var q = document.getElementById('search-tec').value.trim().toLowerCase();
+    renderTec(terminosTec, q);
+  };
 
   window.filtrarTec = function() {
     var q = document.getElementById('search-tec').value.trim().toLowerCase();
@@ -288,6 +410,11 @@ mark {
         desc: definicion
       };
 
+      // Guardar en localStorage para persistencia
+      var guardados = JSON.parse(localStorage.getItem('glosario_tec_extra') || '[]');
+      guardados.push(nuevo);
+      localStorage.setItem('glosario_tec_extra', JSON.stringify(guardados));
+
       terminosTec.push(nuevo);
       document.getElementById('nuevo-termino').value = '';
       document.getElementById('nueva-definicion').value = '';
@@ -314,15 +441,25 @@ mark {
   function init() {
     var grid = document.getElementById('grid-tec');
     var formContainer = document.getElementById('glosario-form-container');
-    if (grid) {
-      renderTec(terminosTec, '');
-      if (formContainer && window.auth && window.auth.isAuthenticated()) {
-        formContainer.style.display = 'block';
-      } else if (formContainer) {
-        formContainer.style.display = 'none';
+    if (!grid) { setTimeout(init, 200); return; }
+
+    // Cargar términos extra guardados en localStorage
+    var extra = JSON.parse(localStorage.getItem('glosario_tec_extra') || '[]');
+    extra.forEach(function(t) { terminosTec.push(t); });
+    renderTec(terminosTec, '');
+
+    // Esperar a que auth.js esté listo para mostrar/ocultar el form
+    function checkAuth() {
+      if (window.auth) {
+        var autenticado = window.auth.isAuthenticated();
+        isAdmin = autenticado && window.auth.getUserRole() === 'admin';
+        if (formContainer) formContainer.style.display = autenticado ? 'block' : 'none';
+        if (isAdmin) renderTec(terminosTec, '');
+      } else {
+        setTimeout(checkAuth, 150);
       }
     }
-    else { setTimeout(init, 200); }
+    checkAuth();
   }
   init();
 })();

@@ -189,7 +189,10 @@ mark {
     document.querySelectorAll('#cats-tec .btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
     var q = document.getElementById('search-tec').value.trim().toLowerCase();
-    renderTec(terminosTec, q);
+    renderTec(terminosTec, q);   
+
+     
+     ![alt text](image.png)
   };
 
   function init() {

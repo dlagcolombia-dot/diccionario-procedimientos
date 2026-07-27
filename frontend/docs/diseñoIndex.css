@@ -388,3 +388,42 @@ button.sidebar-toggle::after,
     display: none !important;
   }
 }
+
+/* ────────────────────────────────────────
+   RESPONSIVE - CONTENIDO PRINCIPAL
+──────────────────────────────────────── */
+@media screen and (max-width: 768px) {
+  .page-title { font-size: 26px; flex-direction: column; gap: 8px; text-align: center; }
+  .page-title i { font-size: 28px; }
+  .page-subtitle { font-size: 15px; text-align: center; }
+  .page-header { padding: 20px 10px; margin-bottom: 30px; }
+
+  .stats-section { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
+  .stat-card { padding: 20px 12px; }
+  .stat-number { font-size: 30px; }
+  .stat-label { font-size: 11px; }
+
+  .section-title { font-size: 20px; margin-bottom: 18px; }
+
+  .features-grid { grid-template-columns: 1fr; gap: 14px; }
+  .feature-card { padding: 20px; }
+  .feature-icon { width: 48px; height: 48px; margin-bottom: 14px; }
+  .feature-icon i { font-size: 22px; }
+  .feature-card h3 { font-size: 16px; }
+
+  .quick-start-steps { grid-template-columns: 1fr; gap: 20px; }
+  .step-card { padding: 24px 18px 18px; }
+
+  .ownership-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ownership-card { padding: 16px 14px; min-height: auto; }
+  .oc-title { font-size: 13px; }
+  .oc-desc { font-size: 11px; }
+
+  .tip-section { flex-direction: column; gap: 10px; text-align: center; padding: 16px; }
+}
+
+@media screen and (max-width: 480px) {
+  .stats-section { grid-template-columns: 1fr; }
+  .ownership-grid { grid-template-columns: 1fr; }
+  .page-title { font-size: 22px; }
+}

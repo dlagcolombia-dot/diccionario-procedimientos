@@ -297,7 +297,10 @@
       search: { maxAge: 86400000, paths: 'auto', placeholder: 'Buscar procedimientos...', noData: 'No se encontraron resultados', depth: 6, hideOtherSidebarContent: false },
       pagination: { previousText: 'Anterior', nextText: 'Siguiente' },
       copyCode: { buttonText: 'Copiar', errorText: 'Error', successText: '✓ Copiado' },
-      alias: { '/.*/_sidebar.md': '/_sidebar.md' },
+      alias: {
+        '/.*/_sidebar.md': '/_sidebar.md',
+        '/enlaces.html': '/enlaces.md'
+      },
 
       plugins: [
         function(hook) {
