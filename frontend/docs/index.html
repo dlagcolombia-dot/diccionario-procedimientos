@@ -56,6 +56,11 @@
     .sidebar-nav>ul>li>ul>li>a.active { background: var(--red-lighter); color: var(--red-primary) !important; font-weight: 700; }
     .sidebar-nav>ul>li>a { color: var(--gray-dark) !important; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; padding: 14px 12px; margin: 4px 0; background: var(--gray-light); border-radius: 8px; display: block; transition: all 0.3s; }
     .sidebar-nav>ul>li>a:hover { color: var(--red-primary) !important; background: var(--red-light); padding-left: 16px; }
+    /* Links directos de nivel raíz en docsify (Inicio, Enlaces) */
+    .sidebar-nav ul>li>a[href="/"],
+    .sidebar-nav ul>li>a[href="#/"],
+    .sidebar-nav ul>li>a[href="enlaces.md"],
+    .sidebar-nav ul>li:not(:has(ul))>a { color: var(--gray-dark) !important; font-weight: 700 !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; padding: 14px 12px !important; margin: 4px 0 !important; background: var(--gray-light) !important; border-radius: 8px !important; display: block !important; }
     .sidebar-nav i { margin-right: 10px; font-size: 17px; }
 
     button.sidebar-toggle, .sidebar-toggle-button, .sidebar-toggle { width: 35px !important; height: 35px !important; min-width: 35px !important; max-width: 35px !important; min-height: 35px !important; max-height: 35px !important; background-color: var(--red-primary) !important; background: var(--red-primary) !important; border: none !important; border-radius: 6px !important; box-shadow: 0 2px 8px rgba(220,38,38,0.3) !important; padding: 0 !important; margin: 0 !important; display: none !important; align-items: center !important; justify-content: center !important; position: fixed !important; top: 12px !important; left: 12px !important; z-index: 1001 !important; cursor: pointer !important; outline: none !important; flex-direction: column !important; gap: 3px !important; }
@@ -337,6 +342,20 @@
               topItems.forEach(function(li) {
                 var p  = li.querySelector(':scope > p');
                 var ul = li.querySelector(':scope > ul');
+                // Aplicar estilo bold a links directos de nivel raíz (sin submenú)
+                var directLink = li.querySelector(':scope > a');
+                if (directLink && !ul) {
+                  directLink.style.fontWeight = '700';
+                  directLink.style.fontSize = '13px';
+                  directLink.style.textTransform = 'uppercase';
+                  directLink.style.letterSpacing = '0.8px';
+                  directLink.style.padding = '14px 12px';
+                  directLink.style.margin = '4px 0';
+                  directLink.style.background = 'var(--gray-light)';
+                  directLink.style.borderRadius = '8px';
+                  directLink.style.display = 'block';
+                  directLink.style.color = 'var(--gray-dark)';
+                }
                 if (!p || !ul) return;
                 if (!p.getAttribute('data-collapsible')) {
                   p.setAttribute('data-collapsible', 'true');
