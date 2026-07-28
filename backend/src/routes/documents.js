@@ -9,6 +9,7 @@ const { isValidTermino, isValidDefinicion } = require('../utils/validators');
 const router = express.Router();
 const glossaryFile = path.join(__dirname, '..', '..', 'data', 'glossary-proposals.json');
 
+// ─── Glosario: propuestas (debe ir ANTES de /:modulo) ────────────────────────
 router.post('/glosario/propuestas', requireAuth, (req, res) => {
   try {
     const { termino, definicion, categoria } = req.body;
@@ -46,5 +47,10 @@ router.post('/glosario/propuestas', requireAuth, (req, res) => {
     res.status(500).json({ error: 'No se pudo guardar la propuesta' });
   }
 });
+
+// ─── Rutas de documentos (manuales, actas, procedimientos) ───────────────────
+router.get('/:modulo',                   DocumentController.getAll);
+router.post('/:modulo', requireAuth, upload.single('pdf'), DocumentController.create);
+router.delete('/:modulo/:id', requireAuth, DocumentController.delete);
 
 module.exports = router;
