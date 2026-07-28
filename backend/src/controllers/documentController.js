@@ -1,7 +1,7 @@
 const Document = require('../models/Document');
 const cloudinary = require('../config/cloudinary');
 const { today } = require('../utils/dateHelper');
-const { isValidModule } = require('../utils/validators');
+const { isValidModule, isValidTitulo, isValidDescripcion } = require('../utils/validators');
 
 class DocumentController {
   static async getAll(req, res) {
@@ -35,6 +35,24 @@ class DocumentController {
 
     if (!titulo) {
       return res.status(400).json({ error: 'El título es obligatorio' });
+    }
+
+    if (!isValidTitulo(titulo)) {
+      return res.status(400).json({ error: 'Título inválido. Use entre 3 y 150 caracteres, sin caracteres especiales.' });
+    }
+
+    if (!isValidDescripcion(descripcion)) {
+      return res.status(400).json({ error: 'La descripción no puede superar 300 caracteres.' });
+    }
+
+    // Validar que el archivo sea PDF
+    if (req.file.mimetype !== 'application/pdf' && !req.file.originalname.match(/\.pdf$/i)) {
+      return res.status(400).json({ error: 'Solo se permiten archivos PDF.' });
+    }
+
+    // Máximo 20 MB
+    if (req.file.size > 20 * 1024 * 1024) {
+      return res.status(400).json({ error: 'El archivo no puede superar 20 MB.' });
     }
 
     try {

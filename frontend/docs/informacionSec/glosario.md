@@ -363,6 +363,18 @@
       return;
     }
 
+    // Validaciones con expresiones regulares
+    var reTermino   = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-_./()]{2,100}$/;
+    var reDefinicion = /^[\s\S]{5,500}$/;
+    if (!reTermino.test(termino)) {
+      if (msg) { msg.textContent = 'Término inválido (2-100 caracteres, sin caracteres especiales).'; msg.style.display='inline-block'; msg.className='align-self-center text-danger'; }
+      return;
+    }
+    if (!reDefinicion.test(definicion)) {
+      if (msg) { msg.textContent = 'La definición debe tener entre 5 y 500 caracteres.'; msg.style.display='inline-block'; msg.className='align-self-center text-danger'; }
+      return;
+    }
+
     if (!window.auth || !window.auth.isAuthenticated()) {
       if (msg) {
         msg.textContent = 'Debes iniciar sesión para enviar una propuesta.';

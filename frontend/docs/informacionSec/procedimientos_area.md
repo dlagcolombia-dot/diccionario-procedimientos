@@ -192,6 +192,30 @@
       return;
     }
 
+    // Validaciones con expresiones regulares
+    var reTituloProc = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-_.()]{3,150}$/;
+    var reDescProc   = /^[\s\S]{0,300}$/;
+    if (!reTituloProc.test(titulo)) {
+      msg.className = 'alert alert-danger'; msg.style.display = 'block';
+      msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> Título inválido (3-150 caracteres, sin caracteres especiales).';
+      return;
+    }
+    if (desc && !reDescProc.test(desc)) {
+      msg.className = 'alert alert-danger'; msg.style.display = 'block';
+      msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> La descripción no puede superar 300 caracteres.';
+      return;
+    }
+    if (pdf.type !== 'application/pdf' && !pdf.name.match(/\.pdf$/i)) {
+      msg.className = 'alert alert-danger'; msg.style.display = 'block';
+      msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> Solo se permiten archivos PDF.';
+      return;
+    }
+    if (pdf.size > 20 * 1024 * 1024) {
+      msg.className = 'alert alert-danger'; msg.style.display = 'block';
+      msg.innerHTML = '<i class="bi bi-exclamation-circle"></i> El archivo no puede superar 20 MB.';
+      return;
+    }
+
     var form = new FormData();
     form.append('titulo', titulo);
     form.append('descripcion', desc);

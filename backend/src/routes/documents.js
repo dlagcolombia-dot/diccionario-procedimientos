@@ -4,6 +4,7 @@ const path = require('path');
 const DocumentController = require('../controllers/documentController');
 const { requireAuth } = require('../middlewares/auth');
 const upload = require('../middlewares/upload');
+const { isValidTermino, isValidDefinicion } = require('../utils/validators');
 
 const router = express.Router();
 const glossaryFile = path.join(__dirname, '..', '..', 'data', 'glossary-proposals.json');
@@ -14,6 +15,14 @@ router.post('/glosario/propuestas', requireAuth, (req, res) => {
 
     if (!termino || !definicion) {
       return res.status(400).json({ error: 'El término y la definición son obligatorios' });
+    }
+
+    if (!isValidTermino(termino)) {
+      return res.status(400).json({ error: 'Término inválido. Use entre 2 y 100 caracteres, sin caracteres especiales.' });
+    }
+
+    if (!isValidDefinicion(definicion)) {
+      return res.status(400).json({ error: 'La definición debe tener entre 5 y 500 caracteres.' });
     }
 
     fs.mkdirSync(path.dirname(glossaryFile), { recursive: true });

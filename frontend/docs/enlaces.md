@@ -290,7 +290,15 @@ mark { background-color:#fef08a; padding:2px 4px; border-radius:3px; font-weight
     var msg    = document.getElementById('msg-enlace');
     if (!nombre || !url) { msg.textContent='El nombre y la URL son obligatorios.'; msg.style.display='inline'; msg.className='text-danger'; return; }
     if (!url.startsWith('http')) { msg.textContent='La URL debe comenzar con http://'; msg.style.display='inline'; msg.className='text-danger'; return; }
+    // Validaciones enlaces
     var iconMap = { Operaciones:'bi-calendar-check', Infraestructura:'bi-cpu', Desarrollo:'bi-diagram-3', Seguridad:'bi-shield-check', Analitica:'bi-bar-chart-fill', Redes:'bi-people-fill', Despacho:'bi-compass', 'Innovación':'bi-trophy-fill', 'Bots Telegram':'bi-telegram', Otro:'bi-link-45deg' };
+    // Validaciones enlaces
+    var reNombre = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-_.()]{2,80}$/;
+    var reDesc   = /^.{0,200}$/;
+    var reUrl    = /^https?:\/\/([\w\-]+\.)+[\w\-]+(\/[\w\-./?%&=#]*)?$/;
+    if (!reNombre.test(nombre)) { msg.textContent='Nombre inválido (2-80 caracteres, sin caracteres especiales).'; msg.style.display='inline'; msg.className='text-danger'; return; }
+    if (!reUrl.test(url)) { msg.textContent='URL inválida. Debe comenzar con http:// o https:// y tener formato correcto.'; msg.style.display='inline'; msg.className='text-danger'; return; }
+    if (desc && !reDesc.test(desc)) { msg.textContent='La descripción no puede superar 200 caracteres.'; msg.style.display='inline'; msg.className='text-danger'; return; }
     enlacesExtra.push({ icon: iconMap[cat]||'bi-link-45deg', nombre:nombre, desc:desc||'Sin descripcion', url:url, cat:cat });
     saveExtra();
     document.getElementById('enlace-nombre').value='';

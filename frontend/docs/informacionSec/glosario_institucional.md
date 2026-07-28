@@ -349,6 +349,19 @@ mark {
       if (msg) { msg.textContent = 'Completa el término y la definición.'; msg.style.display = 'inline-block'; msg.className = 'align-self-center text-danger'; }
       return;
     }
+
+    // Validaciones con expresiones regulares
+    var reTerminoInst   = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-_./()]{2,100}$/;
+    var reDefinicionInst = /^[\s\S]{5,500}$/;
+    if (!reTerminoInst.test(termino)) {
+      if (msg) { msg.textContent = 'Término inválido (2-100 caracteres, sin caracteres especiales).'; msg.style.display='inline-block'; msg.className='align-self-center text-danger'; }
+      return;
+    }
+    if (!reDefinicionInst.test(definicion)) {
+      if (msg) { msg.textContent = 'La definición debe tener entre 5 y 500 caracteres.'; msg.style.display='inline-block'; msg.className='align-self-center text-danger'; }
+      return;
+    }
+
     if (!window.auth || !window.auth.isAuthenticated()) {
       if (msg) { msg.textContent = 'Debes iniciar sesión para enviar una propuesta.'; msg.style.display = 'inline-block'; msg.className = 'align-self-center text-danger'; }
       return;
