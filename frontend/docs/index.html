@@ -181,6 +181,65 @@
     @media (max-width: 560px) {
       .ownership-grid { grid-template-columns: 1fr; }
     }
+
+    /* ===== REGIONALES ===== */
+    .regionales-section { margin-bottom: 50px; }
+    .regionales-layout {
+      display: grid;
+      grid-template-columns: 40% 60%;
+      gap: 32px;
+      align-items: start;
+    }
+    .regionales-map-col {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: sticky;
+      top: 20px;
+    }
+    .regionales-map-col img {
+      width: 100%;
+      max-width: 420px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 12px;
+      display: block;
+    }
+    .regionales-cards-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .regional-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      overflow: hidden;
+      border: 1px solid #f0f0f0;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .regional-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    .regional-card-header {
+      padding: 10px 18px;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+    .regional-card-body {
+      padding: 12px 18px;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    @media (max-width: 900px) {
+      .regionales-layout { grid-template-columns: 1fr 1fr; }
+      .regionales-map-col { position: static; }
+    }
+    @media (max-width: 640px) {
+      .regionales-layout { grid-template-columns: 1fr; }
+      .regionales-map-col img { max-width: 320px; margin: 0 auto; }
+    }
   </style>
 </head>
 
@@ -232,6 +291,37 @@
       <h3 class="oc-title">Me exijo y mejoro<span>cada día</span></h3>\
       <p class="oc-desc">Elevo el estándar. Calidad sobre cantidad. Aprendo del error y evoluciono.</p>\
       <ul class="oc-list"><li>Calidad sobre cantidad</li><li>Desarrollo continuo</li><li>Elimino desperdicios</li><li>La zona de confort me incomoda</li></ul>\
+    </div>\
+  </div>\
+</div>\
+\
+<div class="regionales-section">\
+  <h2 class="section-title" style="text-align:center;justify-content:center;"><i class="bi bi-geo-alt-fill"></i> Conoce nuestras Regionales</h2>\
+  <div class="regionales-layout">\
+    <div class="regionales-map-col">\
+      <img src="/mapa-regionales.png" alt="Mapa de Regionales Colombia" />\
+    </div>\
+    <div class="regionales-cards-col">\
+      <div class="regional-card">\
+        <div class="regional-card-header" style="background:#00A6C7;">Región 1</div>\
+        <div class="regional-card-body">Atlántico, Bolívar, Cesar, Córdoba, La Guajira, Magdalena, Sucre y San Andrés.</div>\
+      </div>\
+      <div class="regional-card">\
+        <div class="regional-card-header" style="background:#B22222;">Región 2</div>\
+        <div class="regional-card-body">Antioquia, Caldas, Chocó, Quindío y Risaralda.</div>\
+      </div>\
+      <div class="regional-card">\
+        <div class="regional-card-header" style="background:#F7941D;">Región 3</div>\
+        <div class="regional-card-body">Caquetá, Cauca, Huila, Nariño, Putumayo, Tolima y Valle del Cauca.</div>\
+      </div>\
+      <div class="regional-card">\
+        <div class="regional-card-header" style="background:#333333;">Región 4</div>\
+        <div class="regional-card-body">Bogotá, Soacha, Chía, Facatativá, Madrid, Mosquera, Cajicá, Cota, Funza, La Calera, Sopó, Tocancipá y Zipaquirá.</div>\
+      </div>\
+      <div class="regional-card">\
+        <div class="regional-card-header" style="background:#E53935;">Región 5</div>\
+        <div class="regional-card-body">Región de los Santanderes, Boyacá, otros municipios de Cundinamarca, Meta y territorios nacionales.</div>\
+      </div>\
     </div>\
   </div>\
 </div>\
